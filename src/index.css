@@ -113,3 +113,17 @@ body {
   50% { transform: translateX(-50%); }
   100% { transform: translateX(0); }
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: lightblue;
+  opacity: 0.7;
+  border-radius: 10px;
+}
