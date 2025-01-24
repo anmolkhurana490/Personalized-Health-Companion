@@ -2,21 +2,18 @@ import React, { useState } from 'react';
 import { useForm } from "react-hook-form"
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import form_data from "./formComponent_data"
+import axios from 'axios';
 
 import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
 import 'react-tabs/style/react-tabs.css';
 import "./styles.css"
+import { signupSubmit } from './handlers';
 
 
 const Signup = () => {
     const roles = ['admin', 'doctor', 'user']
     const [selectedRole, setSelectedRole] = useState("user")
-
-    const onSubmit = (data) => {
-        delete data.authentication_details.confirmPassword;
-        console.log(data)
-    }
 
     const handleTabSelect = (index) => {
         const role = roles[index]
@@ -46,23 +43,27 @@ const Signup = () => {
                     </TabPanel>
                 </Tabs>
 
-                <FormComponent selectedRole={selectedRole} onSubmit={onSubmit} />
+                {
+                    selectedRole == "admin" ? <AdminComponent onSubmit={signupSubmit} /> :
+                        selectedRole == "doctor" ? <DoctorComponent onSubmit={signupSubmit} /> :
+                            <UserComponent onSubmit={signupSubmit} />
+                }
             </div>
         </div>
     );
 };
 
 
-const FormComponent = ({ selectedRole, onSubmit }) => {
-    const { register, formState: { errors }, handleSubmit, watch } = useForm()
+const AdminComponent = ({ onSubmit }) => {
+    const { register, formState: { errors, isSubmitting }, handleSubmit, watch } = useForm()
     const [showPassword, setShowPassword] = useState(false)
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <input type="hidden" {...register("role", { required: true })} value={selectedRole} />
+        <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+            <input type="hidden" {...register("role", { required: true })} value={"admin"} />
 
             {
-                Object.entries(form_data[selectedRole]).map(([compKey, compData], index) => (
+                Object.entries(form_data["admin"]).map(([compKey, compData], index) => (
                     <div key={index} className="my-8">
                         <h3 className="text-xl font-semibold my-2">{compData.title}</h3>
 
@@ -73,7 +74,9 @@ const FormComponent = ({ selectedRole, onSubmit }) => {
                                     {
                                         inputData.type == "select" ?
                                             <SelectComp {...{ compKey, inputName, inputData, register }} /> :
-                                            <InputComp {...{ compKey, inputName, inputData, register, watch, showPassword, setShowPassword }} />
+                                            inputData.type == "password" ?
+                                                <PasswordComp {...{ compKey, inputName, inputData, register, watch, showPassword, setShowPassword }} /> :
+                                                <InputComp {...{ compKey, inputName, inputData, register }} />
                                     }
                                     {errors[compKey] && errors[compKey][inputName] && <p className="text-red-500 text-base">
                                         {errors[compKey][inputName].message}
@@ -86,12 +89,106 @@ const FormComponent = ({ selectedRole, onSubmit }) => {
                 ))
             }
 
-            <input type='submit' className='bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700' />
+            <input type='submit' disabled={isSubmitting} className='bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:bg-blue-400' />
         </form>
     )
 }
 
-const InputComp = ({ compKey, inputName, inputData, register, watch, showPassword, setShowPassword }) => {
+const DoctorComponent = ({ onSubmit }) => {
+    const { register, formState: { errors, isSubmitting }, handleSubmit, watch } = useForm()
+    const [showPassword, setShowPassword] = useState(false)
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+            <input type="hidden" {...register("role", { required: true })} value={"doctor"} />
+
+            {
+                Object.entries(form_data["doctor"]).map(([compKey, compData], index) => (
+                    <div key={index} className="my-8">
+                        <h3 className="text-xl font-semibold my-2">{compData.title}</h3>
+
+                        <div className='grid grid-cols-3 gap-x-10 gap-y-6'>
+                            {Object.entries(compData.inputs).map(([inputName, inputData], idx) => (
+                                <div key={idx} className="mb-4 relative">
+                                    <label className="block text-gray-800">{inputData.label}:</label>
+                                    {
+                                        inputData.type == "select" ?
+                                            <SelectComp {...{ compKey, inputName, inputData, register }} /> :
+                                            inputData.type == "password" ?
+                                                <PasswordComp {...{ compKey, inputName, inputData, register, watch, showPassword, setShowPassword }} /> :
+                                                <InputComp {...{ compKey, inputName, inputData, register }} />
+                                    }
+                                    {errors[compKey] && errors[compKey][inputName] && <p className="text-red-500 text-base">
+                                        {errors[compKey][inputName].message}
+                                    </p>}
+                                </div>
+                            ))}
+                        </div>
+
+                    </div>
+                ))
+            }
+
+            <input type='submit' disabled={isSubmitting} className='bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:bg-blue-400' />
+        </form>
+    )
+}
+
+const UserComponent = ({ onSubmit }) => {
+    const { register, formState: { errors, isSubmitting }, handleSubmit, watch } = useForm()
+    const [showPassword, setShowPassword] = useState(false)
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+            <input type="hidden" {...register("role", { required: true })} value={"user"} />
+
+            {
+                Object.entries(form_data["user"]).map(([compKey, compData], index) => (
+                    <div key={index} className="my-8">
+                        <h3 className="text-xl font-semibold my-2">{compData.title}</h3>
+
+                        <div className='grid grid-cols-3 gap-x-10 gap-y-6'>
+                            {Object.entries(compData.inputs).map(([inputName, inputData], idx) => (
+                                <div key={idx} className="mb-4 relative">
+                                    <label className="block text-gray-800">{inputData.label}:</label>
+                                    {
+                                        inputData.type == "select" ?
+                                            <SelectComp {...{ compKey, inputName, inputData, register }} /> :
+                                            inputData.type == "password" ?
+                                                <PasswordComp {...{ compKey, inputName, inputData, register, watch, showPassword, setShowPassword }} /> :
+                                                <InputComp {...{ compKey, inputName, inputData, register }} />
+                                    }
+                                    {errors[compKey] && errors[compKey][inputName] && <p className="text-red-500 text-base">
+                                        {errors[compKey][inputName].message}
+                                    </p>}
+                                </div>
+                            ))}
+                        </div>
+
+                    </div>
+                ))
+            }
+
+            <input type='submit' disabled={isSubmitting} className='bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:bg-blue-400' />
+        </form>
+    )
+}
+
+const InputComp = ({ compKey, inputName, inputData, register }) => {
+    return (
+        <>
+            <input
+                type={inputData.type}
+                {...register(`${compKey}.${inputName}`, inputData.rules)
+                }
+                placeholder={inputData.placeholder}
+                className="w-full px-3 py-2 border rounded"
+            />
+        </>
+    )
+}
+
+const PasswordComp = ({ compKey, inputName, inputData, register, watch, showPassword, setShowPassword }) => {
     return (
         <>
             <input

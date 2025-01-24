@@ -1,16 +1,43 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { AppContext } from '../AppProvider';
+
+import { IoSunny, IoMoon } from "react-icons/io5";
+import { logoutHandler } from './Auth_Components/handlers';
 
 const Navbar = () => {
+    const { loggedIn, setLoggedIn, setProfile, darkTheme, setDarkTheme } = useContext(AppContext);
+
+    const toggleTheme = () => {
+        console.log('theme changed')
+        setDarkTheme(!darkTheme);
+    };
+
     return (
         <nav className="bg-blue-600 p-4">
             <div className="container mx-auto flex justify-between items-center">
                 <div className="text-white text-2xl font-bold">VitalSphere</div>
-                <ul className="flex space-x-4 text-lg">
-                    <li><a href="#" className="text-white hover:text-gray-200">Home</a></li>
-                    <li><a href="#" className="text-white hover:text-gray-200">About</a></li>
-                    <li><a href="#" className="text-white hover:text-gray-200">Services</a></li>
-                    <li><a href="#" className="text-white hover:text-gray-200">Contact</a></li>
-                </ul>
+
+                <div className="flex space-x-16 items-center">
+                    {loggedIn ? (
+                        <button onClick={() => logoutHandler(setLoggedIn, setProfile)} className='bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-200'>Logout</button>
+                    ) : (
+                        <div className='flex space-x-4'>
+                            <a href="/login" className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-200">Login</a>
+                            <a href="/signup" className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-200">Sign Up</a>
+                        </div>
+                    )}
+
+                    <button className='text-white text-3xl px-2 py-1' onClick={toggleTheme}>
+                        {darkTheme ? <IoSunny /> : <IoMoon />}
+                    </button>
+
+                    <ul className="flex space-x-4 text-lg">
+                        <li><a href="/home" className="text-white hover:text-gray-200">Home</a></li>
+                        <li><a href="#" className="text-white hover:text-gray-200">About</a></li>
+                        <li><a href="#" className="text-white hover:text-gray-200">Services</a></li>
+                        <li><a href="#" className="text-white hover:text-gray-200">Contact</a></li>
+                    </ul>
+                </div>
             </div>
         </nav>
     )

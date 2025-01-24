@@ -79,7 +79,17 @@ const form_data = {
             inputs: {
                 "profilePicture": {
                     label: "Profile Picture",
-                    type: "file"
+                    type: "file",
+                    rules: {
+                        validate: {
+                            fileType: (value) => {
+                                return value[0] && ["image/jpg", "image/jpeg", "image/png"].includes(value[0].type) || "File must be in JPG, JPEG, or PNG format";
+                            },
+                            fileSize: (value) => { // in bytes
+                                return value[0] && value[0].size <= 1048576 || "File size cannot exceed 1MB";
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -196,7 +206,17 @@ const form_data = {
                 "licenseProof": {
                     label: "License Proof Upload",
                     type: "file",
-                    rules: { required: "License Proof is Required" }
+                    rules: { 
+                        required: "License Proof is Required",
+                        validate: {
+                            fileType: (value) => {
+                                return value[0] && ["image/jpg", "image/jpeg", "image/png", "application/pdf"].includes(value[0].type) || "File must be in PNG, JPG, JPEG or PNG format";
+                            },
+                            fileSize: (value) => { // in bytes
+                                return value[0] && value[0].size <= 3145728 || "File size cannot exceed 3MB";
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -215,7 +235,17 @@ const form_data = {
             inputs: {
                 "profilePicture": {
                     label: "Profile Picture",
-                    type: "file"
+                    type: "file",
+                    rules: {
+                        validate: {
+                            fileType: (value) => {
+                                return value[0] && ["image/jpg", "image/jpeg", "image/png"].includes(value[0].type) || "File must be in JPG, JPEG, or PNG format";
+                            },
+                            fileSize: (value) => {
+                                return value[0] && value[0].size <= 1048576 || "File size cannot exceed 1MB";
+                            }
+                        }
+                    }
                 },
                 "biography": {
                     label: "Biography/Introduction",
@@ -349,9 +379,19 @@ const form_data = {
             inputs: {
                 "profilePicture": {
                     label: "Profile Picture",
-                    type: "file"
+                    type: "file",
+                    rules: {
+                        validate: {
+                            fileType: (value) => {
+                                return value[0] && ["image/jpg", "image/jpeg", "image/png"].includes(value[0].type) || "File must be in JPG, JPEG, or PNG format";
+                            },
+                            fileSize: (value) => { // in bytes
+                                return value[0] && value[0].size <= 1048576 || "File size cannot exceed 1MB";
+                            }
+                        }
+                    }
                 }
-            }
+            },
         }
     }
 }

@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useForm } from "react-hook-form"
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import { AppContext } from '../../AppProvider';
+import { loginSubmit } from './handlers';
+import axios from 'axios';
 
 import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
@@ -10,13 +13,11 @@ import "./styles.css"
 const Login = () => {
     const roles = ['admin', 'doctor', 'user']
 
-    const { register, formState: { errors }, handleSubmit, setValue } = useForm()
+    const { setLoggedIn, setProfile } = useContext(AppContext);
+
+    const { register, setError, formState: { errors, isSubmitting }, handleSubmit, setValue } = useForm()
     const [selectedRole, setSelectedRole] = useState('user')
     const [showPassword, setShowPassword] = useState(false)
-
-    const onSubmit = (e) => {
-        console.log(e)
-    }
 
     const handleTabSelect = async (index) => {
         const role = roles[index]
@@ -47,10 +48,10 @@ const Login = () => {
                     </TabPanel>
                 </Tabs>
 
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form onSubmit={handleSubmit((data) => loginSubmit(data, setProfile, setLoggedIn, setError))} className='space-y-4'>
                     <input type="hidden" {...register("role", { required: true })} value={selectedRole} />
 
-                    <div className="mb-4">
+                    <div className="">
                         <label className="block text-gray-800">Email:</label>
                         <input
                             type="text"
@@ -67,7 +68,7 @@ const Login = () => {
                         {errors.email && <p className="text-red-500 text-base">{errors.email.message}</p>}
                     </div>
 
-                    <div className="mb-4 relative">
+                    <div className="relative">
                         <label className="block text-gray-800">Password:</label>
                         <input
                             type={showPassword ? "text" : "password"}
@@ -79,16 +80,16 @@ const Login = () => {
                             placeholder='Enter Your Password'
                             className="w-full px-3 py-2 border rounded"
                         />
-                        <button onClick={() => setShowPassword(!showPassword)} className='absolute right-0 text-3xl px-4 py-2'>
+                        <button type='button' onClick={() => setShowPassword(!showPassword)} className='absolute right-0 text-3xl px-4 py-2'>
                             {showPassword ? <IoEyeOff /> : <IoEye />}
                         </button>
 
                         {errors.password && <p className="text-red-500 text-base">{errors.password.message}</p>}
                     </div>
 
-                    {<p className="text-red-500"></p>}
+                    {errors.loginError && <p className="text-red-500 text-base">{errors.loginError.message}</p>}
 
-                    <input type='submit' className='bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700' />
+                    <input type='submit' disabled={isSubmitting} className='bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:bg-blue-400' />
                 </form>
             </div>
         </div>
