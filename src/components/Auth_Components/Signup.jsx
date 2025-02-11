@@ -2,23 +2,25 @@ import React, { useState } from 'react';
 import { useForm } from "react-hook-form"
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import form_data from "./formComponent_data"
-import axios from 'axios';
 
 import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
 import 'react-tabs/style/react-tabs.css';
 import "./styles.css"
 import { signupSubmit } from './handlers';
+import { useNavigate } from 'react-router-dom';
 
 
 const Signup = () => {
-    const roles = ['admin', 'doctor', 'user']
+    const roles = ['doctor', 'user']
     const [selectedRole, setSelectedRole] = useState("user")
 
     const handleTabSelect = (index) => {
         const role = roles[index]
         setSelectedRole(role);
     }
+
+    const navigate = useNavigate();
 
     return (
         <div className="w-4/5 space-y-16">
@@ -27,14 +29,14 @@ const Signup = () => {
             <div className="bg-gray-200 bg-opacity-70 text-lg p-6 rounded shadow-md w-full">
                 <Tabs selectedIndex={roles.indexOf(selectedRole)} onSelect={handleTabSelect}>
                     <TabList className="flex w-full mb-4 font-semibold">
-                        <Tab className="role-tab flex-grow text-center py-1">Admin</Tab>
+                        {/* <Tab className="role-tab flex-grow text-center py-1">Admin</Tab> */}
                         <Tab className="role-tab flex-grow text-center py-1">Doctor</Tab>
                         <Tab className="role-tab flex-grow text-center py-1">User</Tab>
                     </TabList>
 
-                    <TabPanel>
+                    {/* <TabPanel>
                         <h2 className='text-2xl font-bold text-center'>Admin Register</h2>
-                    </TabPanel>
+                    </TabPanel> */}
                     <TabPanel>
                         <h2 className='text-2xl font-bold text-center'>Doctor Register</h2>
                     </TabPanel>
@@ -44,9 +46,9 @@ const Signup = () => {
                 </Tabs>
 
                 {
-                    selectedRole == "admin" ? <AdminComponent onSubmit={signupSubmit} /> :
-                        selectedRole == "doctor" ? <DoctorComponent onSubmit={signupSubmit} /> :
-                            <UserComponent onSubmit={signupSubmit} />
+                    // selectedRole == "admin" ? <AdminComponent onSubmit={(data)=>signupSubmit(data, navigate)} /> :
+                    selectedRole == "doctor" ? <DoctorComponent onSubmit={(data)=>signupSubmit(data, navigate)} /> :
+                        <UserComponent onSubmit={(data)=>signupSubmit(data, navigate)} />
                 }
             </div>
         </div>
@@ -54,45 +56,45 @@ const Signup = () => {
 };
 
 
-const AdminComponent = ({ onSubmit }) => {
-    const { register, formState: { errors, isSubmitting }, handleSubmit, watch } = useForm()
-    const [showPassword, setShowPassword] = useState(false)
+// const AdminComponent = ({ onSubmit }) => {
+//     const { register, formState: { errors, isSubmitting }, handleSubmit, watch } = useForm()
+//     const [showPassword, setShowPassword] = useState(false)
 
-    return (
-        <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
-            <input type="hidden" {...register("role", { required: true })} value={"admin"} />
+//     return (
+//         <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+//             <input type="hidden" {...register("role", { required: true })} value={"admin"} />
 
-            {
-                Object.entries(form_data["admin"]).map(([compKey, compData], index) => (
-                    <div key={index} className="my-8">
-                        <h3 className="text-xl font-semibold my-2">{compData.title}</h3>
+//             {
+//                 Object.entries(form_data["admin"]).map(([compKey, compData], index) => (
+//                     <div key={index} className="my-8">
+//                         <h3 className="text-xl font-semibold my-2">{compData.title}</h3>
 
-                        <div className='grid grid-cols-3 gap-x-10 gap-y-6'>
-                            {Object.entries(compData.inputs).map(([inputName, inputData], idx) => (
-                                <div key={idx} className="mb-4 relative">
-                                    <label className="block text-gray-800">{inputData.label}:</label>
-                                    {
-                                        inputData.type == "select" ?
-                                            <SelectComp {...{ compKey, inputName, inputData, register }} /> :
-                                            inputData.type == "password" ?
-                                                <PasswordComp {...{ compKey, inputName, inputData, register, watch, showPassword, setShowPassword }} /> :
-                                                <InputComp {...{ compKey, inputName, inputData, register }} />
-                                    }
-                                    {errors[compKey] && errors[compKey][inputName] && <p className="text-red-500 text-base">
-                                        {errors[compKey][inputName].message}
-                                    </p>}
-                                </div>
-                            ))}
-                        </div>
+//                         <div className='grid grid-cols-3 gap-x-10 gap-y-6'>
+//                             {Object.entries(compData.inputs).map(([inputName, inputData], idx) => (
+//                                 <div key={idx} className="mb-4 relative">
+//                                     <label className="block text-gray-800">{inputData.label}:</label>
+//                                     {
+//                                         inputData.type == "select" ?
+//                                             <SelectComp {...{ compKey, inputName, inputData, register }} /> :
+//                                             inputData.type == "password" ?
+//                                                 <PasswordComp {...{ compKey, inputName, inputData, register, watch, showPassword, setShowPassword }} /> :
+//                                                 <InputComp {...{ compKey, inputName, inputData, register }} />
+//                                     }
+//                                     {errors[compKey] && errors[compKey][inputName] && <p className="text-red-500 text-base">
+//                                         {errors[compKey][inputName].message}
+//                                     </p>}
+//                                 </div>
+//                             ))}
+//                         </div>
 
-                    </div>
-                ))
-            }
+//                     </div>
+//                 ))
+//             }
 
-            <input type='submit' disabled={isSubmitting} className='bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:bg-blue-400' />
-        </form>
-    )
-}
+//             <input type='submit' disabled={isSubmitting} className='bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:bg-blue-400' />
+//         </form>
+//     )
+// }
 
 const DoctorComponent = ({ onSubmit }) => {
     const { register, formState: { errors, isSubmitting }, handleSubmit, watch } = useForm()

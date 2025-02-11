@@ -3,15 +3,15 @@ import { useForm } from "react-hook-form"
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { AppContext } from '../../AppProvider';
 import { loginSubmit } from './handlers';
-import axios from 'axios';
 
 import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
 import 'react-tabs/style/react-tabs.css';
 import "./styles.css"
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    const roles = ['admin', 'doctor', 'user']
+    const roles = ['doctor', 'user']
 
     const { setLoggedIn, setProfile } = useContext(AppContext);
 
@@ -25,6 +25,8 @@ const Login = () => {
         setValue('role', role);
     }
 
+    const navigate = useNavigate();
+
     return (
         <div className="w-2/5 space-y-16">
             <h1 className='text-4xl font-bold text-center'>Login To Your Account</h1>
@@ -32,14 +34,14 @@ const Login = () => {
             <div className="bg-gray-200 bg-opacity-70 text-lg p-6 rounded shadow-md w-full">
                 <Tabs selectedIndex={roles.indexOf(selectedRole)} onSelect={handleTabSelect}>
                     <TabList className="flex w-full mb-4 font-semibold">
-                        <Tab className="role-tab flex-grow text-center py-1">Admin</Tab>
+                        {/* <Tab className="role-tab flex-grow text-center py-1">Admin</Tab> */}
                         <Tab className="role-tab flex-grow text-center py-1">Doctor</Tab>
                         <Tab className="role-tab flex-grow text-center py-1">User</Tab>
                     </TabList>
 
-                    <TabPanel>
+                    {/* <TabPanel>
                         <h2 className='text-2xl font-bold text-center'>Admin Login</h2>
-                    </TabPanel>
+                    </TabPanel> */}
                     <TabPanel>
                         <h2 className='text-2xl font-bold text-center'>Doctor Login</h2>
                     </TabPanel>
@@ -48,7 +50,7 @@ const Login = () => {
                     </TabPanel>
                 </Tabs>
 
-                <form onSubmit={handleSubmit((data) => loginSubmit(data, setProfile, setLoggedIn, setError))} className='space-y-4'>
+                <form onSubmit={handleSubmit((data) => loginSubmit(data, setProfile, setLoggedIn, setError, navigate))} className='space-y-4'>
                     <input type="hidden" {...register("role", { required: true })} value={selectedRole} />
 
                     <div className="">

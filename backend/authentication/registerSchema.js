@@ -2,21 +2,21 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 
-const adminSchema = new Schema({
-    personal_info: {
-        fullName: { type: String, required: true },
-        email: { type: String, required: true, match: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i },
-        phoneNumber: { type: String, required: true, match: /^\+?[0-9][0-9-]{5,14}$/ }
-    },
-    authentication_details: {
-        username: { type: String },
-        password: { type: String, required: true, minlength: 4, maxlength: 9 },
-    },
-    admin_specific_info: {
-        accessKey: { type: String, required: true }
-    },
-    profilePicture: { type: String }
-});
+// const adminSchema = new Schema({
+//     personal_info: {
+//         fullName: { type: String, required: true },
+//         email: { type: String, required: true, match: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i },
+//         phoneNumber: { type: String, required: true, match: /^\+?[0-9][0-9-]{5,14}$/ }
+//     },
+//     authentication_details: {
+//         username: { type: String },
+//         password: { type: String, required: true, minlength: 4, maxlength: 9 },
+//     },
+//     admin_specific_info: {
+//         accessKey: { type: String, required: true }
+//     },
+//     profilePicture: { type: String }
+// });
 
 const doctorSchema = new Schema({
     personal_info: {
@@ -72,8 +72,8 @@ const userSchema = new Schema({
     profilePicture: { type: String }
 });
 
-const Admin = mongoose.model('Admin', adminSchema);
+// const Admin = mongoose.model('Admin', adminSchema);
 const Doctor = mongoose.model('Doctor', doctorSchema);
 const User = mongoose.model('User', userSchema);
 
-export { Admin, Doctor, User };
+export { Doctor, User };

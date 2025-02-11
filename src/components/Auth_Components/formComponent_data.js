@@ -1,99 +1,99 @@
 const form_data = {
-    admin: {
-        "personal_info": {
-            title: "Personal Information",
-            inputs: {
-                "fullName": {
-                    label: "Full Name",
-                    type: "text",
-                    placeholder: 'Enter Your Full Name',
-                    rules: { required: "Full Name is Required" }
-                },
-                "email": {
-                    label: "Email Address",
-                    type: "text",
-                    placeholder: 'Enter Your Email Address',
-                    rules: {
-                        pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "Invalid Email Address"
-                        },
-                        required: "Email is Required"
-                    }
-                },
-                "phoneNumber": {
-                    label: "Phone Number",
-                    type: "text",
-                    placeholder: 'Enter Your Phone Number',
-                    rules: {
-                        pattern: {
-                            value: /^\+?[0-9][0-9-]{5,14}$/,
-                            message: "Invalid Phone Number"
-                        },
-                        required: "Phone Number is Required"
-                    }
-                }
-            }
-        },
-        "authentication_details": {
-            title: "Authentication Details",
-            inputs: {
-                "username": {
-                    label: "Username (optional)",
-                    type: "text",
-                    placeholder: 'Enter Your Username'
-                },
-                "password": {
-                    label: "Password",
-                    type: "password",
-                    placeholder: 'Enter Your Password',
-                    rules: {
-                        minLength: { value: 4, message: "Password must be at least 4 characters" },
-                        maxLength: { value: 9, message: "Password cannot exceed 8 characters" },
-                        required: "Password is Required"
-                    }
-                },
-                "confirmPassword": {
-                    label: "Confirm Password",
-                    type: "password",
-                    placeholder: 'Confirm Your Password',
-                    rules: {
-                        required: "Confirm Password is Required"
-                    }
-                }
-            }
-        },
-        "admin_specific_info": {
-            title: "Admin-Specific Information",
-            inputs: {
-                "accessKey": {
-                    label: "Admin Code or Access Key",
-                    type: "text",
-                    placeholder: 'Enter Admin Code or Access Key',
-                    rules: { required: "Admin Code is Required" }
-                }
-            }
-        },
-        "optional": {
-            title: "Optional",
-            inputs: {
-                "profilePicture": {
-                    label: "Profile Picture",
-                    type: "file",
-                    rules: {
-                        validate: {
-                            fileType: (value) => {
-                                return value[0] && ["image/jpg", "image/jpeg", "image/png"].includes(value[0].type) || "File must be in JPG, JPEG, or PNG format";
-                            },
-                            fileSize: (value) => { // in bytes
-                                return value[0] && value[0].size <= 1048576 || "File size cannot exceed 1MB";
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
+    // admin: {
+    //     "personal_info": {
+    //         title: "Personal Information",
+    //         inputs: {
+    //             "fullName": {
+    //                 label: "Full Name",
+    //                 type: "text",
+    //                 placeholder: 'Enter Your Full Name',
+    //                 rules: { required: "Full Name is Required" }
+    //             },
+    //             "email": {
+    //                 label: "Email Address",
+    //                 type: "text",
+    //                 placeholder: 'Enter Your Email Address',
+    //                 rules: {
+    //                     pattern: {
+    //                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+    //                         message: "Invalid Email Address"
+    //                     },
+    //                     required: "Email is Required"
+    //                 }
+    //             },
+    //             "phoneNumber": {
+    //                 label: "Phone Number",
+    //                 type: "text",
+    //                 placeholder: 'Enter Your Phone Number',
+    //                 rules: {
+    //                     pattern: {
+    //                         value: /^\+?[0-9][0-9-]{5,14}$/,
+    //                         message: "Invalid Phone Number"
+    //                     },
+    //                     required: "Phone Number is Required"
+    //                 }
+    //             }
+    //         }
+    //     },
+    //     "authentication_details": {
+    //         title: "Authentication Details",
+    //         inputs: {
+    //             "username": {
+    //                 label: "Username (optional)",
+    //                 type: "text",
+    //                 placeholder: 'Enter Your Username'
+    //             },
+    //             "password": {
+    //                 label: "Password",
+    //                 type: "password",
+    //                 placeholder: 'Enter Your Password',
+    //                 rules: {
+    //                     minLength: { value: 4, message: "Password must be at least 4 characters" },
+    //                     maxLength: { value: 9, message: "Password cannot exceed 8 characters" },
+    //                     required: "Password is Required"
+    //                 }
+    //             },
+    //             "confirmPassword": {
+    //                 label: "Confirm Password",
+    //                 type: "password",
+    //                 placeholder: 'Confirm Your Password',
+    //                 rules: {
+    //                     required: "Confirm Password is Required"
+    //                 }
+    //             }
+    //         }
+    //     },
+    //     "admin_specific_info": {
+    //         title: "Admin-Specific Information",
+    //         inputs: {
+    //             "accessKey": {
+    //                 label: "Admin Code or Access Key",
+    //                 type: "text",
+    //                 placeholder: 'Enter Admin Code or Access Key',
+    //                 rules: { required: "Admin Code is Required" }
+    //             }
+    //         }
+    //     },
+    //     "optional": {
+    //         title: "Optional",
+    //         inputs: {
+    //             "profilePicture": {
+    //                 label: "Profile Picture",
+    //                 type: "file",
+    //                 rules: {
+    //                     validate: {
+    //                         fileType: (value) => {
+    //                             return value[0] && ["image/jpg", "image/jpeg", "image/png"].includes(value[0].type) || "File must be in JPG, JPEG, or PNG format";
+    //                         },
+    //                         fileSize: (value) => { // in bytes
+    //                             return value[0] && value[0].size <= 1048576 || "File size cannot exceed 1MB";
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // },
 
     doctor: {
         "personal_info": {

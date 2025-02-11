@@ -2,10 +2,11 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-import authenticate_router from "./routes/authenticate.js";
-import { verifyToken } from "./authentication/stateless_auth.js";
 import connectDB from "./config/db.js";
 import authMiddleware from "./middlewares/authen_middleware.js";
+
+import authenticate_router from "./routes/authenticate.js";
+import dashboard_router from "./routes/dashboard.js";
 
 const app = express();
 let port = 3000;
@@ -22,9 +23,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // Apply authentication middleware
-app.use(authMiddleware);
+// app.use(authMiddleware);
 
 app.use('/authenticate', authenticate_router);
+app.use('/dashboard', authMiddleware, dashboard_router);
 
 app.listen(port, () => {
     console.log(`App is listening at port ${port}`);
