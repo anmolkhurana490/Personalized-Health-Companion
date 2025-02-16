@@ -59,11 +59,7 @@ const userSchema = new Schema({
         username: { type: String },
         password: { type: String, required: true, minlength: 4, maxlength: 9 },
     },
-    health_info: {
-        bloodGroup: { type: String },
-        knownAllergies: { type: String },
-        existingMedicalConditions: { type: String }
-    },
+    health_info: { type: Schema.Types.ObjectId, ref: "HealthRecord", required: true },
     emergency_contact: {
         emergencyContactName: { type: String, required: true },
         emergencyContactRelationship: { type: String, required: true },

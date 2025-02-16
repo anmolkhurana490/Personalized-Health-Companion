@@ -83,6 +83,9 @@ body {
 }
 
 /* Adding flowing wave animation */
+.waves {
+  width: 0;
+}
 .wave {
   position: absolute;
   width: 200%;

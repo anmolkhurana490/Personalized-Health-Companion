@@ -3,10 +3,10 @@ import { AppContext } from '../AppProvider';
 
 import { IoSunny, IoMoon } from "react-icons/io5";
 import { logoutHandler } from './Auth_Components/handlers';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
-    const { loggedIn, setLoggedIn, setProfile, darkTheme, setDarkTheme } = useContext(AppContext);
+    const { loggedIn, setLoggedIn, profile, setProfile, darkTheme, setDarkTheme, currRole } = useContext(AppContext);
 
     const toggleTheme = () => {
         console.log('theme changed')
@@ -39,6 +39,7 @@ const Navbar = () => {
                         <li><a href="#" className="text-white hover:text-gray-200">About</a></li>
                         <li><a href="#" className="text-white hover:text-gray-200">Services</a></li>
                         <li><a href="#" className="text-white hover:text-gray-200">Contact</a></li>
+                        {loggedIn && <li><Link to={`/dashboard/${currRole}`} className="text-white hover:text-gray-200 capitalize">{currRole} Dashboard</Link></li>}
                     </ul>
                 </div>
             </div>

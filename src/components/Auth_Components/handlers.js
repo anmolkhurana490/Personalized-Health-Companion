@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { AppContext } from "../../AppProvider";
 import axios from "axios";
 
-export const loginSubmit = async (data, setProfile, setLoggedIn, setError, navigate) => {
+export const loginSubmit = async (data, setProfile, setLoggedIn, setError, navigate, setCurrRole) => {
     try {
         const response = await axios.post('http://localhost:3000/authenticate/login', data, {
             withCredentials: true
@@ -12,8 +12,10 @@ export const loginSubmit = async (data, setProfile, setLoggedIn, setError, navig
             // console.log(response.data.profile)
             setProfile(response.data.profile);
             setLoggedIn(true);
+            setCurrRole(response.data.role);
             navigate(`/dashboard/${response.data.role}`)
         } else {
+            setLoggedIn(false)
             setError("loginError", { type: 'custom', message: response.data.message });
         }
     } catch (error) {

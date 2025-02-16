@@ -8,9 +8,9 @@ const DashboardRoutes = () => {
     return (
       <Routes>
         {/* <Route path="/" element={<Home />} /> */}
-        {/* <Route path="admin" element={<Admin />} /> */}
-        <Route path="doctor" element={<Doctor />} />
-        <Route path="user" element={<User />} />
+        {/* <Route path="admin/*" element={<Admin />} /> */}
+        <Route path="doctor/*" element={<Doctor />} />
+        <Route path="user/*" element={<User />} />
       </Routes>
     )
   }

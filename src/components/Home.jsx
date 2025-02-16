@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import logo from '../assets/logo.png'
+import { AppContext } from '../AppProvider';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
+    const { currRole, loggedIn } = useContext(AppContext);
+
     return (
         <main className="flex flex-col items-center mb-16">
             <img src={logo} width={200}></img>
@@ -9,9 +13,9 @@ const Home = () => {
             <p className="text-xl mb-8 text-center">
                 Your personalized health companion. Track your health, get insights, and stay motivated.
             </p>
-            <a href='/dashboard' className="bg-blue-600 text-white text-xl py-2 px-4 rounded hover:bg-blue-700">
+            <Link to={loggedIn? `/dashboard/${currRole}` : '/login'} className="bg-blue-600 text-white text-xl py-2 px-4 rounded hover:bg-blue-700">
                 Get Started
-            </a>
+            </Link>
         </main>
     )
 }

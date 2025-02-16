@@ -26,14 +26,14 @@ const AppRoutes = () => {
 
 
 const App = () => {
-  const { loggedIn, setLoggedIn, profile, setProfile, darkTheme, setDarkTheme } = useContext(AppContext);
+  const { loggedIn, setLoggedIn, profile, setProfile, darkTheme, setDarkTheme, setCurrRole } = useContext(AppContext);
 
-  useEffect(() => getProfile(setProfile, setLoggedIn), []);
+  useEffect(() => getProfile(setProfile, setLoggedIn, setCurrRole), []);
 
   return (
     <>
       <Router>
-        <div className={'main-container overflow-y-auto h-screen custom-scrollbar bg-opacity-80 ' + (darkTheme ? "bg-black text-white" : "bg-transparent text-black")}>
+        <div className={'main-container overflow-y-auto h-screen w-screen custom-scrollbar bg-opacity-80 ' + (darkTheme ? "bg-black text-white" : "bg-transparent text-black")}>
           <Navbar />
 
           <div className="min-h-[85vh] flex flex-col items-center my-8">

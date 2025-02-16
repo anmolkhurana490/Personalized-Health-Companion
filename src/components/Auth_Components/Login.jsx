@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
     const roles = ['doctor', 'user']
 
-    const { setLoggedIn, setProfile } = useContext(AppContext);
+    const { setLoggedIn, setProfile, setCurrRole } = useContext(AppContext);
 
     const { register, setError, formState: { errors, isSubmitting }, handleSubmit, setValue } = useForm()
     const [selectedRole, setSelectedRole] = useState('user')
@@ -50,7 +50,7 @@ const Login = () => {
                     </TabPanel>
                 </Tabs>
 
-                <form onSubmit={handleSubmit((data) => loginSubmit(data, setProfile, setLoggedIn, setError, navigate))} className='space-y-4'>
+                <form onSubmit={handleSubmit((data) => loginSubmit(data, setProfile, setLoggedIn, setError, navigate, setCurrRole))} className='space-y-4'>
                     <input type="hidden" {...register("role", { required: true })} value={selectedRole} />
 
                     <div className="">

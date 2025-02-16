@@ -270,6 +270,7 @@ const form_data = {
                     label: "Email Address",
                     type: "text",
                     placeholder: 'Enter Your Email Address',
+                    disabled: true,
                     rules: {
                         pattern: {
                             value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -334,10 +335,25 @@ const form_data = {
         "health_info": {
             title: "Health Information",
             inputs: {
+                "weight": {
+                    label: "Weight (in kg)",
+                    type: "Number",
+                    placeholder: 'Enter Your Weight (in kg)'
+                },
+                "height": {
+                    label: "Height (in cm)",
+                    type: "Number",
+                    placeholder: 'Enter Your Height (in cm)'
+                },
                 "bloodGroup": {
                     label: "Blood Group",
                     type: "text",
                     placeholder: 'Enter Your Blood Group'
+                },
+                "heartRate": {
+                    label: "Heart/Pulse Rate (in bpm)",
+                    type: "Number",
+                    placeholder: 'Enter Your Heart/Pulse Rate (in bpm)'
                 },
                 "knownAllergies": {
                     label: "Known Allergies",

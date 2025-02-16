@@ -1,13 +1,14 @@
 import express from "express";
 import { Doctor, User } from "../authentication/registerSchema.js"
 import { signToken, verifyToken } from "../authentication/stateless_auth.js"
+import { HealthRecord } from "../dashboards/userRecordSchemas.js";
 import multer from 'multer';
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        if (file.fieldname.includes('profilePicture')) cb(null, './app-files/profilePicture');
-        else if (req.body.role == "doctor") cb(null, './app-files/doctorDocs');
-        else cb(null, './app-files/other');
+        if (file.fieldname.includes('profilePicture')) cb(null, './public/profilePicture');
+        else if (req.body.role == "doctor") cb(null, './public/doctorDocs');
+        else cb(null, './public/other');
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + file.originalname;
@@ -35,7 +36,6 @@ const router = express.Router();
 router.post('/signup/doctor', upload.fields([{ name: 'optional[profilePicture]' }, { name: 'professional_info[licenseProof]' }]), async (req, res) => {
     try {
         const data = req.body
-        console.log(data)
         data.profilePicture = req.files['optional[profilePicture]'][0].filename;
         data.professional_info.licenseProof = req.files['professional_info[licenseProof]'][0].filename;
         await Doctor.create(data);
@@ -51,7 +51,14 @@ router.post('/signup/user', upload.fields([{ name: 'optional[profilePicture]' }]
     try {
         const data = req.body
         data.profilePicture = req.files['optional[profilePicture]'][0].filename;
-        await User.create(data);
+
+        const userHealth = {
+            ...data.health_info,
+            weightHistory: [{ weight: data.health_info.weight }]
+        }
+
+        const healthRecord = await HealthRecord.create(userHealth);
+        await User.create({ ...data, health_info: { userId: healthRecord._id } });
         res.send({ status: 'success', path: '/login', message: "signup successful" })
     }
     catch (e) {
