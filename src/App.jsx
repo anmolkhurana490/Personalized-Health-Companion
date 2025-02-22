@@ -10,6 +10,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AppContext } from './AppProvider';
 import { getProfile } from './handlers';
+import Functions from './components/functions/Functions';
 
 
 const AppRoutes = () => {
@@ -20,6 +21,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/dashboard/*" element={<Dashboard />} />
+      <Route path="/user/*" element={<Functions />} />
     </Routes>
   )
 }
@@ -36,7 +38,7 @@ const App = () => {
         <div className={'main-container overflow-y-auto h-screen w-screen custom-scrollbar bg-opacity-80 ' + (darkTheme ? "bg-black text-white" : "bg-transparent text-black")}>
           <Navbar />
 
-          <div className="min-h-[85vh] flex flex-col items-center my-8">
+          <div className="min-h-[85vh] flex flex-col items-center my-4">
             <AppRoutes />
           </div>
 

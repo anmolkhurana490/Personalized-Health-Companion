@@ -6,7 +6,7 @@ import form_data from "./formComponent_data"
 import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
 import 'react-tabs/style/react-tabs.css';
-import "./styles.css"
+import "../styles.css"
 import { signupSubmit } from './handlers';
 import { useNavigate } from 'react-router-dom';
 

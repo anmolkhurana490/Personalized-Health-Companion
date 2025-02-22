@@ -7,7 +7,7 @@ import { loginSubmit } from './handlers';
 import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
 import 'react-tabs/style/react-tabs.css';
-import "./styles.css"
+import "../styles.css"
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
