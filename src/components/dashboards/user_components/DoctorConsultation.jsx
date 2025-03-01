@@ -4,14 +4,21 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import '../../styles.css'
 import { IoArrowBackOutline } from "react-icons/io5";
+import { useLocation } from 'react-router-dom';
 
 const DoctorConsultation = () => {
+    const location = useLocation();
     const [activeTab, setActiveTab] = useState("doctor-chat");
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search)
+        const tab = params.get('tab')
+        if(tab) setActiveTab(tab);
+    }, [location])
 
     const options = ["doctor-chat", "video-call", "book-appointment"]
 
     return (
-
         <div className="max-h-full overflow-auto custom-scrollbar bg-white rounded shadow p-4">
             <div className='mb-8'>
                 <h2 className="text-2xl font-semibold mb-2">Doctor Consultation</h2>
@@ -186,8 +193,8 @@ const BookAppointment = () => {
     };
 
     return (
-        <div className="max-h-[50vh] border rounded-lg p-4 bg-gray-100">
-            <div className="mb-2">
+        <div className="max-h-[50vh] flex justify-between items-center border rounded-lg p-4 bg-gray-100">
+            <div className="w-2/5">
                 <label className="block">Select Doctor:</label>
                 <select value={doctor} onChange={(e) => setDoctor(e.target.value)} className="w-full p-2 border rounded">
                     <option value="">-- Select --</option>
@@ -195,13 +202,13 @@ const BookAppointment = () => {
                     <option value="Dr. Jane Smith">Dr. Jane Smith</option>
                 </select>
             </div>
-            <div className="mb-2">
+            <div className="">
                 <label className="block">Select Date:</label>
-                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full p-2 border rounded" />
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} onClick={(e)=>e.target.showPicker()} className="w-full p-2 border rounded" />
             </div>
-            <div className="mb-2">
+            <div className="">
                 <label className="block">Select Time:</label>
-                <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="w-full p-2 border rounded" />
+                <input type="time" value={time} onChange={(e) => setTime(e.target.value)} onClick={(e)=>e.target.showPicker()} className="w-full p-2 border rounded" />
             </div>
             <button onClick={bookAppointment} className="bg-blue-500 text-white px-4 py-2 rounded">Book</button>
         </div>

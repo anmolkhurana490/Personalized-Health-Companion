@@ -6,6 +6,7 @@ import connectDB from "./config/db.js";
 import authMiddleware from "./middlewares/authen_middleware.js";
 
 import authenticate_router from "./routes/authenticate.js";
+import chatbot_router from "./routes/chatbot.js";
 import dashboard_router from "./routes/dashboard.js";
 
 const app = express();
@@ -26,6 +27,7 @@ app.use(cookieParser());
 // app.use(authMiddleware);
 
 app.use('/authenticate', authenticate_router);
+app.use('/gemini-chatbot', chatbot_router);
 app.use('/dashboard', authMiddleware, dashboard_router);
 
 app.listen(port, () => {

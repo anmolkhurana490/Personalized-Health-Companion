@@ -10,6 +10,8 @@ import Profile from './user_components/Profile'
 import DoctorConsultaion from './user_components/DoctorConsultation'
 import AIHealthAssistant from './user_components/AIHealthAssistant'
 import Appointments from './user_components/Appointments';
+import LifestyleTracker from './user_components/LifestyleTracker';
+import MedicalHistory from './user_components/MedicalHistory';
 
 const UserDashboardRoutes = () => {
     const { profile, setProfile } = useContext(AppContext);
@@ -174,23 +176,6 @@ const MainDashboard = ({ profile }) => {
     )
 }
 
-const LifestyleTracker = () => {
-    return (
-        <div className="p-4 bg-white rounded shadow">
-            <h2 className="text-2xl font-semibold mb-2">Lifestyle Tracker</h2>
-            <p>Track your daily habits here.</p>
-        </div>
-    );
-};
-
-const MedicalHistory = () => {
-    return (
-        <div className="p-4 bg-white rounded shadow">
-            <h2 className="text-2xl font-semibold mb-2">Medical History</h2>
-            <p>Upload and view your medical reports or prescriptions here.</p>
-        </div>
-    );
-};
 
 const Notifications = () => {
     return (
