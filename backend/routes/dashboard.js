@@ -45,7 +45,7 @@ router.get('/profile', async (req, res) => {
         if (!profile) {
             return res.send({ status: 'failed', message: 'User not found' });
         }
-        
+
         res.send({ status: 'success', path: `${req.data.role}`, profile, role: req.data.role });
     }
     catch (e) {
@@ -87,9 +87,9 @@ router.post('/profile', async (req, res) => {
                 ...req.body.health_info
             }
 
-            
+
             const healthRecord = await HealthRecord.findById(userHealth._id);
-            
+
             await HealthRecord.findByIdAndUpdate(userHealth._id, { ...userHealth, weightHistory: updateWeightHistory(healthRecord.weightHistory, userHealth.weight), heartRateLogs: updateHeartHistory(healthRecord.heartRateLogs, userHealth.heartRate) });
 
             await User.findByIdAndUpdate(profile._id, profile);
@@ -106,14 +106,14 @@ router.post('/profile', async (req, res) => {
 export default router;
 
 function updateWeightHistory(weightHistory, currentWeight) {
-    if(!currentWeight) return weightHistory;
+    if (!currentWeight) return weightHistory;
 
     const currentDate = new Date(Date.now());
     let existingRecord = weightHistory.slice(-1)[0];
 
     if (existingRecord) {
         const lastDate = new Date(existingRecord.date);
-        
+
         if (lastDate.getMonth() == currentDate.getMonth() && lastDate.getFullYear() == currentDate.getFullYear()) {
             existingRecord.weight = (Number(existingRecord.weight) + Number(currentWeight)) / 2;
             weightHistory.pop();
@@ -128,11 +128,11 @@ function updateWeightHistory(weightHistory, currentWeight) {
 }
 
 function updateHeartHistory(heartRateHistory, currentHeartRate) {
-    if(!currentHeartRate) return heartRateHistory;
+    if (!currentHeartRate) return heartRateHistory;
 
     const currentDate = new Date(Date.now());
     let existingRecord = heartRateHistory.slice(-1)[0];
-    
+
     if (existingRecord) {
         const lastDate = new Date(existingRecord.date);
 

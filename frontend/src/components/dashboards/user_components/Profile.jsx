@@ -40,7 +40,6 @@ const Profile = ({ profile, setProfile, currRole }) => {
             },
         }
 
-
         try {
             const response = await axios.post('http://localhost:3000/dashboard/profile', { ...newProfileData, role: currRole }, {
                 withCredentials: true

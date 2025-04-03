@@ -19,7 +19,7 @@ const UserDashboardRoutes = () => {
     return (
         <Routes>
             <Route path="" element={<MainDashboard profile={profile} />} />
-            <Route path="profile" element={<Profile profile={profile} setProfile={setProfile} />} />
+            <Route path="profile" element={<Profile profile={profile} setProfile={setProfile} currRole={'user'} />} />
             <Route path="health-overview" element={<HealthOverview profile={profile} />} />
             <Route path="doctor-consultation" element={<DoctorConsultaion />} />
             <Route path="ai-health-assistant" element={<AIHealthAssistant />} />
@@ -51,7 +51,7 @@ const UserDashboard = () => {
                 </h1>
             </header>
 
-            <div className=" min-h-[75vh] max-h-screen w-full bg-gray-200 bg-opacity-70 rounded-lg flex">
+            <div className=" min-h-[80vh] max-h-screen w-full bg-gray-200 bg-opacity-70 rounded-lg flex">
                 <aside className="w-64 bg-gray-800 text-white p-4">
                     <nav>
                         <ul>
@@ -89,7 +89,7 @@ const UserDashboard = () => {
                     </nav>
                 </aside>
 
-                <main className="container mx-auto px-4 py-2">
+                <main className="container mx-auto px-4 py-2 overflow-y-auto custom-scrollbar">
 
                     <UserDashboardRoutes />
 
