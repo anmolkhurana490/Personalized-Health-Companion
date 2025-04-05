@@ -55,6 +55,7 @@ router.get('/profile', async (req, res) => {
 
 router.get('/logout', (req, res) => {
     // console.log(req.cookies.loginToken)
+    res.set('Cache-Control', 'no-store');
     if (req.cookies.loginToken) {
         res.clearCookie('loginToken', { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
     }
