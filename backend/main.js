@@ -16,6 +16,8 @@ connectDB();
 
 app.use(cors({
     origin: ['http://localhost:5173', 'https://personalized-health-companion.vercel.app'],
+    methods: ["GET", "POST"], // Specify allowed request methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
     credentials: true
 }));
 
