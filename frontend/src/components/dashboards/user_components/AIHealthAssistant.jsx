@@ -5,6 +5,8 @@ import axios from 'axios';
 
 import { AppContext } from "../../../AppProvider"
 
+const backendURL = "https://personalized-health-companion-backend.vercel.app";
+
 const AIHealthAssistant = () => {
     const { darkTheme } = useContext(AppContext);
 
@@ -20,7 +22,7 @@ const AIHealthAssistant = () => {
 
     const getResponse = async (messages) => {
         try {
-            const response = await axios.post(`http://localhost:3000/gemini-chatbot`, { messages });
+            const response = await axios.post(`${backendURL}/gemini-chatbot`, { messages });
             return response.data;
         } catch (err) {
             console.log("error:", err);

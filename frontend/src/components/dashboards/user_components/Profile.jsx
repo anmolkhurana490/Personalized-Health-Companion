@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import form_data from '../../Auth_Components/formComponent_data';
 import axios from "axios";
 
+const backendURL = "https://personalized-health-companion-backend.vercel.app";
+
 const Profile = ({ profile, setProfile, currRole }) => {
     const [editMode, setEditMode] = useState(false);
     const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm();
@@ -41,7 +43,7 @@ const Profile = ({ profile, setProfile, currRole }) => {
         }
 
         try {
-            const response = await axios.post('http://localhost:3000/dashboard/profile', { ...newProfileData, role: currRole }, {
+            const response = await axios.post(`${backendURL}/dashboard/profile`, { ...newProfileData, role: currRole }, {
                 withCredentials: true
             });
             if (response.data.status === 'success') {

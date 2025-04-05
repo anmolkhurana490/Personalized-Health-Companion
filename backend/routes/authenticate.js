@@ -6,8 +6,8 @@ import multer from 'multer';
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        if (file.fieldname.includes('profilePicture')) cb(null, './public/profilePicture');
-        else if (req.body.role == "doctor") cb(null, './public/doctorDocs');
+        if (file.fieldname.includes('profilePicture')) cb(null, './frontend/public/profilePicture');
+        else if (req.body.role == "doctor") cb(null, './frontend/public/doctorDocs');
         else cb(null, './public/other');
     },
     filename: function (req, file, cb) {
@@ -58,7 +58,7 @@ router.post('/signup/user', upload.fields([{ name: 'optional[profilePicture]' }]
         }
 
         const healthRecord = await HealthRecord.create(userHealth);
-        await User.create({ ...data, health_info: { userId: healthRecord._id } });
+        await User.create({ ...data, health_info: healthRecord._id });
         res.send({ status: 'success', path: '/login', message: "signup successful" })
     }
     catch (e) {
@@ -81,7 +81,7 @@ router.post('/login', async (req, res) => {
             found = await Doctor.findOne(login_data);
         else found = await User.findOne(login_data);
 
-        if (!found) res.send({ status: 'failed', message: "Incorrect Email or Password" });
+        if (!found) return res.send({ status: 'failed', message: "Incorrect Email or Password" });
 
         found = found.toObject();
         delete found.authentication_details.password;

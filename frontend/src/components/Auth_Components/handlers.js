@@ -2,9 +2,11 @@ import { useContext } from "react";
 import { AppContext } from "../../AppProvider";
 import axios from "axios";
 
+const backendURL = "https://personalized-health-companion-backend.vercel.app";
+
 export const loginSubmit = async (data, setProfile, setLoggedIn, setError, navigate, setCurrRole) => {
     try {
-        const response = await axios.post('http://localhost:3000/authenticate/login', data, {
+        const response = await axios.post(`${backendURL}/authenticate/login`, data, {
             withCredentials: true
         });
         if (response.data.status === 'success') {
@@ -41,7 +43,7 @@ export const signupSubmit = async (data, navigate) => {
         }
     });
 
-    await axios.post(`http://localhost:3000/authenticate/signup/${data.role}`, formData)
+    await axios.post(`${backendURL}/authenticate/signup/${data.role}`, formData)
         // .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -52,7 +54,7 @@ export const signupSubmit = async (data, navigate) => {
 }
 
 export const logoutHandler = async (setLoggedIn, setProfile, navigate) => {
-    await axios.get(`http://localhost:3000/dashboard/logout`, {
+    await axios.get(`${backendURL}/dashboard/logout`, {
         withCredentials: true
     })
         // .then(response => response.json())

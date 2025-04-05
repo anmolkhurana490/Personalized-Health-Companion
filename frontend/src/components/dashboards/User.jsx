@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FaUser } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import axios from 'axios';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import { AppContext } from '../../AppProvider';
 import HealthOverview from './user_components/HealthOverview'
