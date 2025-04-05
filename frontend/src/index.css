@@ -86,7 +86,7 @@ body {
 }
 
 .wave {
-  position: absolute;
+  position: fixed;
   width: 200%;
   height: 300px;
   z-index: -1;
