@@ -56,7 +56,7 @@ router.get('/profile', async (req, res) => {
 router.get('/logout', (req, res) => {
     // console.log(req.cookies.loginToken)
     if (req.cookies.loginToken) {
-        res.clearCookie('loginToken', { httpOnly: true, secure: true, sameSite: 'none' });
+        res.clearCookie('loginToken', { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
     }
     res.send({ status: 'success', message: 'Logged out successfully' });
 });
