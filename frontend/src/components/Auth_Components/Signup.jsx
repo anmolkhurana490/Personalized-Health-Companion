@@ -26,7 +26,7 @@ const Signup = () => {
         <div className="w-4/5 space-y-16">
             <h1 className='text-4xl font-bold text-center'>Register Your New Account</h1>
 
-            <div className="bg-gray-200 bg-opacity-70 text-lg p-6 rounded shadow-md w-full">
+            <div className="bg-gray-200/70 text-lg p-6 rounded shadow-md w-full">
                 <Tabs selectedIndex={roles.indexOf(selectedRole)} onSelect={handleTabSelect}>
                     <TabList className="flex w-full mb-4 font-semibold">
                         {/* <Tab className="role-tab flex-grow text-center py-1">Admin</Tab> */}
@@ -47,8 +47,8 @@ const Signup = () => {
 
                 {
                     // selectedRole == "admin" ? <AdminComponent onSubmit={(data)=>signupSubmit(data, navigate)} /> :
-                    selectedRole == "doctor" ? <DoctorComponent onSubmit={(data)=>signupSubmit(data, navigate)} /> :
-                        <UserComponent onSubmit={(data)=>signupSubmit(data, navigate)} />
+                    selectedRole == "doctor" ? <DoctorComponent onSubmit={(data) => signupSubmit(data, navigate)} /> :
+                        <UserComponent onSubmit={(data) => signupSubmit(data, navigate)} />
                 }
             </div>
         </div>

@@ -35,7 +35,7 @@ const App = () => {
   return (
     <>
       <Router>
-        <div className={'main-container overflow-y-auto h-screen w-screen custom-scrollbar bg-opacity-80 ' + (darkTheme ? "bg-black text-white" : "bg-transparent text-black")}>
+        <div className={'main-container overflow-y-auto h-screen w-screen custom-scrollbar ' + (darkTheme ? "bg-black/80 text-white" : "bg-transparent text-black")}>
           <Navbar />
 
           <div className="min-h-[85vh] flex flex-col items-center my-4">

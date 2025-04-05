@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-
-import 'react-tabs/style/react-tabs.css';
-import '../../styles.css'
 import { IoArrowBackOutline } from "react-icons/io5";
 import { useLocation } from 'react-router-dom';
+import { AppContext } from '../../../AppProvider';
+
+import 'react-tabs/style/react-tabs.css';
+import '../../styles.css';
 
 const DoctorConsultation = () => {
     const location = useLocation();
+    const { darkTheme } = useContext(AppContext);
     const [activeTab, setActiveTab] = useState("doctor-chat");
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search)
-        const tab = params.get('tab')
-        if(tab) setActiveTab(tab);
-    }, [location])
+        const params = new URLSearchParams(location.search);
+        const tab = params.get('tab');
+        if (tab) setActiveTab(tab);
+    }, [location]);
 
-    const options = ["doctor-chat", "video-call", "book-appointment"]
+    const options = ["doctor-chat", "video-call", "book-appointment"];
 
     return (
-        <div className="max-h-full overflow-auto custom-scrollbar bg-white rounded shadow p-4">
+        <div className={`max-h-full overflow-auto custom-scrollbar rounded shadow p-4 ${darkTheme ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
             <div className='mb-8'>
                 <h2 className="text-2xl font-semibold mb-2">Doctor Consultation</h2>
                 <p>Chat, Video Call, Book Appointment</p>
@@ -27,21 +29,20 @@ const DoctorConsultation = () => {
 
             <Tabs selectedIndex={options.indexOf(activeTab)} onSelect={(index) => setActiveTab(options[index])}>
                 <TabList className="flex w-full mb-4 font-semibold">
-                    <Tab className="role-tab flex-grow text-center py-1">Chat with Doctor</Tab>
-                    <Tab className="role-tab flex-grow text-center py-1">Video Call</Tab>
-                    <Tab className="role-tab flex-grow text-center py-1">Book New Appointment</Tab>
+                    <Tab className={`role-tab flex-grow text-center py-1 ${darkTheme ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-900'}`}>Chat with Doctor</Tab>
+                    <Tab className={`role-tab flex-grow text-center py-1 ${darkTheme ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-900'}`}>Video Call</Tab>
+                    <Tab className={`role-tab flex-grow text-center py-1 ${darkTheme ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-900'}`}>Book New Appointment</Tab>
                 </TabList>
 
-                <TabPanel><ChatWithDoctor /></TabPanel>
-                <TabPanel><VideoCallDoctor /></TabPanel>
-                <TabPanel><BookAppointment /></TabPanel>
+                <TabPanel><ChatWithDoctor darkTheme={darkTheme} /></TabPanel>
+                <TabPanel><VideoCallDoctor darkTheme={darkTheme} /></TabPanel>
+                <TabPanel><BookAppointment darkTheme={darkTheme} /></TabPanel>
             </Tabs>
         </div>
+    );
+};
 
-    )
-}
-
-const ChatWithDoctor = () => {
+const ChatWithDoctor = ({ darkTheme }) => {
     const [selectedDoctor, setSelectedDoctor] = useState(null);
 
     const assignedDoctors = [
@@ -49,56 +50,42 @@ const ChatWithDoctor = () => {
         { id: 2, name: "Dr. Jane Smith" },
     ];
 
-    useEffect(() => {
-        // socket.on("message", (message) => {
-        //     setMessages((prev) => [...prev, message]);
-        // });
-
-        // return () => {
-        //     socket.off("message");
-        // };
-    }, []);
-
     const onBack = () => setSelectedDoctor(null);
 
     return (
-        <div className="h-[50vh] rounded-lg p-4 bg-gray-100">
+        <div className={`h-[50vh] rounded-lg p-4 ${darkTheme ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}>
             {selectedDoctor ? (
-                <Chat selectedDoctor={selectedDoctor} onBack={onBack} />
+                <Chat selectedDoctor={selectedDoctor} onBack={onBack} darkTheme={darkTheme} />
             ) : (
                 <>
-                    <p className="text-gray-800">Please select a doctor to start chatting.</p>
+                    <p className=''>Please select a doctor to start chatting.</p>
                     {assignedDoctors.map((doc) => (
-                        <div key={doc.id} className="flex items-center gap-4 p-2 mb-2 bg-white rounded shadow">
+                        <div key={doc.id} className={`flex items-center gap-4 p-2 mb-2 rounded shadow ${darkTheme ? 'bg-gray-600' : 'bg-white'}`}>
                             <img src="/profilePicture/1737561841070-anmol_photo.jpg" alt="Doctor Profile" className="w-10 h-10 rounded-full object-cover" />
                             <div className="flex-grow">
                                 <p className="text-lg font-semibold">{doc.name}</p>
-                                <p className="text-sm text-gray-500">General Practitioner</p>
+                                <p className={`text-sm ${darkTheme ? 'text-gray-300' : 'text-gray-600'}`}>General Practitioner</p>
                             </div>
                             <button onClick={() => setSelectedDoctor(doc)} className="bg-blue-500 text-white px-4 py-2 rounded">Chat</button>
                         </div>
                     ))}
                 </>
-            )}
-        </div>
-    )
-}
+            )
+            }
+        </div >
+    );
+};
 
-const Chat = ({ selectedDoctor, onBack }) => {
+const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
     const [messages, setMessages] = useState([
         { sender: "doctor", text: "Hello, how can I assist you today?" },
         { sender: "user", text: "I have been experiencing headaches lately." },
-        { sender: "doctor", text: "I'm sorry to hear that. How long have you been having these headaches?" },
-        { sender: "user", text: "For about a week now." },
-        { sender: "doctor", text: "Have you taken any medication for it?" },
-        { sender: "user", text: "Yes, but it doesn't seem to help much." },
     ]);
 
     const [input, setInput] = useState("");
 
     const sendMessage = () => {
         if (input.trim()) {
-            //   socket.emit("message", { sender: "user", text: input });
             setMessages((prev) => [...prev, { sender: "user", text: input }]);
             setInput("");
         }
@@ -106,7 +93,7 @@ const Chat = ({ selectedDoctor, onBack }) => {
 
     return (
         <>
-            <div className="flex gap-8 items-center mb-4 px-4 py-2 bg-white border rounded shadow">
+            <div className={`flex gap-8 items-center mb-2 px-4 py-2 border rounded shadow ${darkTheme ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}>
                 <button onClick={onBack} className="mb-2 text-blue-500 hover:bg-gray-300 p-2 rounded-full">
                     <IoArrowBackOutline className='text-xl' />
                 </button>
@@ -120,10 +107,10 @@ const Chat = ({ selectedDoctor, onBack }) => {
                 </div>
             </div>
 
-            <div className="h-[30vh] overflow-y-auto custom-scrollbar bg-white p-2 border rounded">
+            <div className={`h-[30vh] overflow-y-auto custom-scrollbar p-2 border rounded ${darkTheme ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}>
                 {messages.map((msg, index) => (
                     <div key={index} className={`p-2 ${msg.sender === "user" ? "text-right" : "text-left"}`}>
-                        <span className={`inline-block px-3 py-1 rounded-md ${msg.sender === "user" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>
+                        <span className={`inline-block px-3 py-1 rounded-md ${msg.sender === "user" ? "bg-blue-500 text-white" : darkTheme ? "bg-gray-600" : "bg-gray-300"}`}>
                             {msg.text}
                         </span>
                     </div>
@@ -135,15 +122,15 @@ const Chat = ({ selectedDoctor, onBack }) => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Type a message..."
-                    className="w-full p-2 border rounded-l"
+                    className={`w-full p-2 border rounded-l ${darkTheme ? 'bg-gray-600 text-white' : 'bg-white text-gray-900'}`}
                 />
                 <button onClick={sendMessage} className="bg-blue-500 text-white px-4 rounded-r">Send</button>
             </div>
         </>
-    )
-}
+    );
+};
 
-const VideoCallDoctor = () => {
+const VideoCallDoctor = ({ darkTheme }) => {
     const scheduledAppointments = [
         { id: 1, doctor: { name: "Dr. John Doe" }, dateTime: "2025-02-25T10:00:00" },
         { id: 2, doctor: { name: "Dr. Jane Smith" }, dateTime: "2025-02-22T16:41:00" },
@@ -154,7 +141,7 @@ const VideoCallDoctor = () => {
     };
 
     return (
-        <div className="h-[50vh] overflow-y-auto custom-scrollbar border rounded-lg p-4 bg-gray-100">
+        <div className={`h-[50vh] overflow-y-auto custom-scrollbar rounded-lg p-4 ${darkTheme ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}>
             <label className="block mb-2">Select Appointment:</label>
             {scheduledAppointments.map((appointment) => {
                 const appointmentDate = new Date(appointment.dateTime);
@@ -162,7 +149,7 @@ const VideoCallDoctor = () => {
                 const formattedTime = appointmentDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
                 return (
-                    <div key={appointment.id} className="flex items-center gap-4 p-2 mb-2 bg-white rounded shadow">
+                    <div key={appointment.id} className={`flex items-center gap-4 p-2 mb-2 rounded shadow ${darkTheme ? 'bg-gray-600' : 'bg-white'}`}>
                         <img src="/profilePicture/1737561841070-anmol_photo.jpg" alt="Doctor Profile" className="w-10 h-10 rounded-full object-cover" />
 
                         <div className="flex-grow">
@@ -179,10 +166,10 @@ const VideoCallDoctor = () => {
                 );
             })}
         </div>
-    )
-}
+    );
+};
 
-const BookAppointment = () => {
+const BookAppointment = ({ darkTheme }) => {
     const [doctor, setDoctor] = useState("");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
@@ -193,26 +180,26 @@ const BookAppointment = () => {
     };
 
     return (
-        <div className="max-h-[50vh] flex justify-between items-center border rounded-lg p-4 bg-gray-100">
-            <div className="w-2/5">
+        <div className={`max-h-[50vh] flex flex-wrap justify-between items-center rounded-lg p-4 ${darkTheme ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}>
+            <div className="w-full md:w-2/5 mb-4 md:mb-0">
                 <label className="block">Select Doctor:</label>
-                <select value={doctor} onChange={(e) => setDoctor(e.target.value)} className="w-full p-2 border rounded">
+                <select value={doctor} onChange={(e) => setDoctor(e.target.value)} className={`w-full p-2 rounded ${darkTheme ? 'bg-gray-600 text-white' : 'bg-white text-gray-900'}`}>
                     <option value="">-- Select --</option>
                     <option value="Dr. John Doe">Dr. John Doe</option>
                     <option value="Dr. Jane Smith">Dr. Jane Smith</option>
                 </select>
             </div>
-            <div className="">
+            <div className="w-full md:w-auto mb-4 md:mb-0">
                 <label className="block">Select Date:</label>
-                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} onClick={(e)=>e.target.showPicker()} className="w-full p-2 border rounded" />
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={`w-full p-2 rounded ${darkTheme ? 'bg-gray-600 text-white' : 'bg-white text-gray-900'}`} />
             </div>
-            <div className="">
+            <div className="w-full md:w-auto mb-4 md:mb-0">
                 <label className="block">Select Time:</label>
-                <input type="time" value={time} onChange={(e) => setTime(e.target.value)} onClick={(e)=>e.target.showPicker()} className="w-full p-2 border rounded" />
+                <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className={`w-full p-2 rounded ${darkTheme ? 'bg-gray-600 text-white' : 'bg-white text-gray-900'}`} />
             </div>
             <button onClick={bookAppointment} className="bg-blue-500 text-white px-4 py-2 rounded">Book</button>
         </div>
-    )
-}
+    );
+};
 
-export default DoctorConsultation
+export default DoctorConsultation;

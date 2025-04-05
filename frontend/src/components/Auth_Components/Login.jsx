@@ -31,7 +31,7 @@ const Login = () => {
         <div className="w-2/5 space-y-16">
             <h1 className='text-4xl font-bold text-center'>Login To Your Account</h1>
 
-            <div className="bg-gray-200 bg-opacity-70 text-lg p-6 rounded shadow-md w-full">
+            <div className="bg-gray-200/70 text-lg p-6 rounded shadow-md w-full">
                 <Tabs selectedIndex={roles.indexOf(selectedRole)} onSelect={handleTabSelect}>
                     <TabList className="flex w-full mb-4 font-semibold">
                         {/* <Tab className="role-tab flex-grow text-center py-1">Admin</Tab> */}

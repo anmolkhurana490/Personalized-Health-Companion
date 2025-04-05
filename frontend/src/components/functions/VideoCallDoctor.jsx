@@ -8,7 +8,7 @@ const VideoCallDoctor = () => {
     const remoteVideoRef = useRef(null);
     const draggableRef = useRef(null);
 
-    const draggingMargin = {x: 10, y: 10};
+    const draggingMargin = { x: 10, y: 10 };
     const [position, setPosition] = useState({ x: draggingMargin.x, y: draggingMargin.y });
 
     const startCall = () => {
@@ -61,7 +61,7 @@ const VideoCallDoctor = () => {
                 </div>
             </header>
 
-            <div className="p-4 shadow-lg min-h-[75vh] max-h-screen w-full bg-gray-200 bg-opacity-70 rounded-lg space-y-8">
+            <div className="p-4 shadow-lg min-h-[75vh] max-h-screen w-full bg-gray-200/70 rounded-lg space-y-8">
                 <div className='relative w-full h-[65vh]'>
                     <DraggableCore nodeRef={draggableRef} onDrag={handleDrag} onStop={handleStop}>
                         <div ref={draggableRef}>

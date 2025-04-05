@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { FaListUl } from "react-icons/fa";
 import { IoGrid } from "react-icons/io5";
+import { AppContext } from '../../../AppProvider';
 
 const Appointments = () => {
-    const [view, setView] = useState('list')
+    const [view, setView] = useState('list');
+    const { darkTheme } = useContext(AppContext);
 
     const [appointments, setAppointments] = useState([
         {
@@ -29,26 +31,34 @@ const Appointments = () => {
     const navigate = useNavigate();
 
     const bookNewAppointment = () => {
-        // Logic to book a new appointment
-        navigate('/dashboard/user/doctor-consultation?tab=book-appointment')
+        navigate('/dashboard/user/doctor-consultation?tab=book-appointment');
     };
 
     const joinAppointment = (id) => {
-        // Logic to join an upcoming appointment
         window.open(`/user/video-call/${id}`, '_blank');
     };
 
     return (
-        <div className="p-4 bg-white rounded shadow">
-            <div className='flex justify-between items-center'>
+        <div className={`p-4 rounded shadow ${darkTheme ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
+            <div className="flex flex-wrap justify-between items-center">
                 <div>
                     <h2 className="text-2xl font-semibold mb-2">Appointments</h2>
                     <p>Past and Upcoming appointments with doctors.</p>
                 </div>
 
-                <div className='space-x-4 text-xl'>
-                    <button onClick={()=>setView('list')}><FaListUl /></button>
-                    <button onClick={()=>setView('grid')}><IoGrid /></button>
+                <div className="flex space-x-4 text-xl">
+                    <button
+                        onClick={() => setView('list')}
+                        className={`p-2 rounded ${view === 'list' ? 'bg-blue-500 text-white' : 'hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                    >
+                        <FaListUl />
+                    </button>
+                    <button
+                        onClick={() => setView('grid')}
+                        className={`p-2 rounded ${view === 'grid' ? 'bg-blue-500 text-white' : 'hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                    >
+                        <IoGrid />
+                    </button>
                 </div>
 
                 <button
@@ -59,14 +69,17 @@ const Appointments = () => {
                 </button>
             </div>
 
-            <div className={`mt-4 gap-4 ${view == "list"? "flex flex-col-reverse justify-between items-center" : "grid grid-cols-3"}`}>
+            <div className={`mt-4 gap-4 ${view === 'list' ? 'flex flex-col' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
                 {appointments.map((appointment) => (
                     <div
                         key={appointment.id}
-                        className="w-full flex flex-wrap gap-x-4 gap-y-2 justify-between items-center p-4 border rounded hover:shadow-lg transition duration-300"
+                        className={`w-full flex flex-wrap gap-2 justify-between items-center p-4 border rounded transition duration-300 ${darkTheme ? 'border-gray-700 hover:shadow-gray-700' : 'border-gray-300 hover:shadow-lg'
+                            }`}
                     >
-                        <p><strong>Date:</strong> {appointment.date}</p>
-                        <p><strong>Doctor:</strong> {appointment.doctor}</p>
+                        <div>
+                            <p><strong>Date:</strong> {appointment.date}</p>
+                            <p><strong>Doctor:</strong> {appointment.doctor}</p>
+                        </div>
                         {appointment.attended ? (
                             <p><strong>Prescription:</strong> {appointment.prescription}</p>
                         ) : (

@@ -1,174 +1,144 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FaFire, FaUtensils, FaMoon, FaSmile, FaEnvira, FaSmoking } from "react-icons/fa";
 import { FaDroplet, FaMobileScreen } from "react-icons/fa6";
 import { LuDumbbell } from "react-icons/lu";
+import { AppContext } from "../../../AppProvider";
 
 const LifestyleTracker = () => {
+  const { darkTheme } = useContext(AppContext);
   const [waterIntake, setWaterIntake] = useState(5); // litres of water
   const maxWater = 10;
 
-  const [activeTab, setActiveTab] = useState("doctor-chat");
-  const options = ["fitness", "exercise", "diet", "sleep", "stress", "hydration"]
-
   return (
-    <div className="max-h-full overflow-auto custom-scrollbar p-4 bg-white rounded shadow">
+    <div
+      className={`max-h-full overflow-auto custom-scrollbar p-4 rounded shadow ${darkTheme ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"
+        }`}
+    >
       <h2 className="text-2xl font-semibold mb-2">Lifestyle Tracker</h2>
       <p>Track your daily habits here.</p>
 
       <div className="grid grid-cols-2 max-md:grid-cols-1 gap-4 p-4">
         {/* Fitness Overview */}
-
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <FaFire /><h3 className="text-xl font-semibold">Daily Activity</h3>
-          </div>
+        <Section title="Daily Activity" icon={<FaFire />} darkTheme={darkTheme}>
           <div className="grid grid-cols-3 gap-4">
-            <StatBox title="Steps" value="7,500" unit="steps" />
-            <StatBox title="Calories Burned" value="450" unit="kcal" />
-            <StatBox title="Active Minutes" value="45" unit="mins" />
+            <StatBox title="Steps" value="7,500" unit="steps" darkTheme={darkTheme} />
+            <StatBox title="Calories Burned" value="450" unit="kcal" darkTheme={darkTheme} />
+            <StatBox title="Active Minutes" value="45" unit="mins" darkTheme={darkTheme} />
           </div>
-        </div>
+        </Section>
 
         {/* Exercise Tracker */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <LuDumbbell /><h3 className="text-xl font-semibold">Workout Log</h3>
-          </div>
-          <div>
-            <ul className="list-disc ml-4">
-              <li>🏃 30 min Running</li>
-              <li>💪 15 min Strength Training</li>
-              <li>🧘 10 min Yoga</li>
-            </ul>
-          </div>
-        </div>
+        <Section title="Workout Log" icon={<LuDumbbell />} darkTheme={darkTheme}>
+          <ul className="list-disc ml-4">
+            <li>🏃 30 min Running</li>
+            <li>💪 15 min Strength Training</li>
+            <li>🧘 10 min Yoga</li>
+          </ul>
+        </Section>
 
         {/* Diet & Nutrition */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <FaUtensils /><h3 className="text-xl font-semibold">Daily Nutrition</h3>
-          </div>
-          <div>
-            <ul className="list-disc ml-4">
-              <li>🍎 Breakfast: Oatmeal & Fruits</li>
-              <li>🥗 Lunch: Grilled Chicken Salad</li>
-              <li>🍛 Dinner: Brown Rice & Vegetables</li>
-            </ul>
-          </div>
-        </div>
+        <Section title="Daily Nutrition" icon={<FaUtensils />} darkTheme={darkTheme}>
+          <ul className="list-disc ml-4">
+            <li>🍎 Breakfast: Oatmeal & Fruits</li>
+            <li>🥗 Lunch: Grilled Chicken Salad</li>
+            <li>🍛 Dinner: Brown Rice & Vegetables</li>
+          </ul>
+        </Section>
 
         {/* Sleep Tracker */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <FaMoon /><h3 className="text-xl font-semibold">Sleep Patterns</h3>
-          </div>
+        <Section title="Sleep Patterns" icon={<FaMoon />} darkTheme={darkTheme}>
           <div className="grid grid-cols-2 gap-4">
-            <StatBox title="Sleep Duration" value="7h 30m" />
-            <StatBox title="Sleep Quality" value="85%" />
+            <StatBox title="Sleep Duration" value="7h 30m" darkTheme={darkTheme} />
+            <StatBox title="Sleep Quality" value="85%" darkTheme={darkTheme} />
           </div>
-        </div>
+        </Section>
 
-        {/* Mental Health Tracker (Mood & Stress) */}
-        <div className="mb-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <FaSmile /><h3 className="text-xl font-semibold">Mental Well-being & Stress</h3>
-            </div>
-            <div>
-              <p>🧘 Mood: 😊 Relaxed</p>
-              <p>📅 Meditation: 10 min</p>
-              <p>📖 Journaling: 5 min</p>
-            </div>
-          </div>
-        </div>
+        {/* Mental Health Tracker */}
+        <Section title="Mental Well-being & Stress" icon={<FaSmile />} darkTheme={darkTheme}>
+          <p>🧘 Mood: 😊 Relaxed</p>
+          <p>📅 Meditation: 10 min</p>
+          <p>📖 Journaling: 5 min</p>
+        </Section>
 
         {/* Hydration Tracker */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <FaDroplet /><h3 className="text-xl font-semibold">Water Intake</h3>
-          </div>
-          <div>
-            <ProgressBar values={{ min: 0, curr: waterIntake, max: maxWater }} titles={{ curr: "Water Intake (in litres)", max: "Max Water (in litres)" }} />
-          </div>
-        </div>
+        <Section title="Water Intake" icon={<FaDroplet />} darkTheme={darkTheme}>
+          <ProgressBar
+            values={{ min: 0, curr: waterIntake, max: maxWater }}
+            titles={{ curr: "Water Intake (in litres)", max: "Max Water (in litres)" }}
+            darkTheme={darkTheme}
+          />
+        </Section>
 
         {/* Screen Time Tracker */}
-        <div className="mb-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <FaMobileScreen /><h3 className="text-xl font-semibold">Screen Time</h3>
-            </div>
-            <div>
-              <StatBox title="Daily Usage" value="4h 15m" />
-              <p>📲 Most Used App: Instagram (1h 20m)</p>
-              <p>⏳ Productivity Apps: 45m</p>
-            </div>
-          </div>
-        </div>
+        <Section title="Screen Time" icon={<FaMobileScreen />} darkTheme={darkTheme}>
+          <StatBox title="Daily Usage" value="4h 15m" darkTheme={darkTheme} />
+          <p>📲 Most Used App: Instagram (1h 20m)</p>
+          <p>⏳ Productivity Apps: 45m</p>
+        </Section>
 
-        {/* Environment Tracking (Air Quality, Noise) */}
-        <div className="mb-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <FaEnvira /><h3 className="text-xl font-semibold">Environmental Factors</h3>
-            </div>
-            <div>
-              <StatBox title="Air Quality Index" value="85" unit="Good" />
-              <p>🌍 Outdoor Temperature: 28°C</p>
-              <p>🔊 Noise Level: 40dB (Moderate)</p>
-            </div>
-          </div>
-        </div>
+        {/* Environment Tracking */}
+        <Section title="Environmental Factors" icon={<FaEnvira />} darkTheme={darkTheme}>
+          <StatBox title="Air Quality Index" value="85" unit="Good" darkTheme={darkTheme} />
+          <p>🌍 Outdoor Temperature: 28°C</p>
+          <p>🔊 Noise Level: 40dB (Moderate)</p>
+        </Section>
 
-
-        {/* Intoxication Habits (Smoking, Alcohol, etc.) */}
-        <div className="mb-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <FaSmoking /><h3 className="text-xl font-semibold">Intoxication Habits</h3>
-            </div>
-            <div>
-              <p>🚬 Smoking: ❌ No</p>
-              <p>🍺 Alcohol: ✔ Occasionally</p>
-            </div>
-          </div>
-        </div>
-
-      </div>
+        {/* Intoxication Habits */}
+        <Section title="Intoxication Habits" icon={<FaSmoking />} darkTheme={darkTheme}>
+          <p>🚬 Smoking: ❌ No</p>
+          <p>🍺 Alcohol: ✔ Occasionally</p>
+        </Section>
+      </div >
     </div>
   );
-}
+};
 
-// Reusable component for stats
-const StatBox = ({ title, value, unit }) => (
-  <div className="bg-white p-4 rounded-lg shadow-sm text-center">
-    <h3 className="text-lg font-semibold mb-1">{title}</h3>
-    <p className="text-xl font-bold">{value} <span className="text-sm">{unit}</span></p>
+const Section = ({ title, icon, children, darkTheme }) => (
+  <div className="mb-6">
+    <div className="flex items-center gap-2 mb-2">
+      {icon}
+      <h3 className="text-xl font-semibold">{title}</h3>
+    </div>
+    <div
+      className={`p-4 rounded ${darkTheme ? "bg-gray-700 text-gray-100" : "bg-gray-100 text-gray-900"
+        }`}
+    >
+      {children}
+    </div>
   </div>
 );
 
-const ProgressBar = ({ values, titles }) => {
+const StatBox = ({ title, value, unit, darkTheme }) => (
+  <div
+    className={`p-4 rounded-lg shadow-sm text-center ${darkTheme ? "bg-gray-700 text-gray-100" : "bg-white text-gray-900"
+      }`}
+  >
+    <h3 className="text-lg font-semibold mb-1">{title}</h3>
+    <p className="text-xl font-bold">
+      {value} <span className="text-sm">{unit}</span>
+    </p>
+  </div>
+);
+
+const ProgressBar = ({ values, titles, darkTheme }) => {
   return (
-    <div className='relative'>
-      <div className="w-full bg-gray-300 rounded-lg overflow-hidden">
+    <div className="relative">
+      <div
+        className={`w-full rounded-lg overflow-hidden ${darkTheme ? "bg-gray-600" : "bg-gray-300"
+          }`}
+      >
         <div
-          className="bg-blue-500 h-4 transition-all duration-500 peer"
+          className={`h-4 transition-all duration-500 ${darkTheme ? "bg-blue-700" : "bg-blue-500"
+            }`}
           style={{ width: `${((values.curr - values.min) / (values.max - values.min)) * 100}%` }}
         ></div>
-
-        <div className="absolute top-0 left-0 z-10 w-full h-full flex items-center justify-center opacity-0 transition-all duration-500 peer-hover:opacity-100 peer-hover:translate-y-10 pointer-events-none">
-          <div className="bg-white p-4 rounded shadow-lg">
-            <p><b>{titles.curr}:</b> {values.curr}</p>
-            <p><b>{titles.max}:</b> {values.max}</p>
-          </div>
-        </div>
       </div>
       <div className="w-full flex justify-between relative mt-1 text-sm">
         <span>{values.min}</span>
         <span>{values.max}</span>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default LifestyleTracker;

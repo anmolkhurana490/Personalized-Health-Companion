@@ -48,7 +48,7 @@ const DoctorDashboard = () => {
             </header>
 
 
-            <div className="h-[80vh] w-full bg-gray-200 bg-opacity-70 rounded-lg flex">
+            <div className="h-[80vh] w-full bg-gray-200/70 rounded-lg flex">
                 <aside className="w-64 bg-gray-800 text-white p-4">
                     <nav>
                         <ul>

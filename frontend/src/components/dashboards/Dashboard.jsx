@@ -5,20 +5,20 @@ import Doctor from "./Doctor";
 import User from "./User";
 
 const DashboardRoutes = () => {
-    return (
-      <Routes>
-        {/* <Route path="/" element={<Home />} /> */}
-        {/* <Route path="admin/*" element={<Admin />} /> */}
-        <Route path="doctor/*" element={<Doctor />} />
-        <Route path="user/*" element={<User />} />
-      </Routes>
-    )
-  }
+  return (
+    <Routes>
+      {/* <Route path="/" element={<Home />} /> */}
+      {/* <Route path="admin/*" element={<Admin />} /> */}
+      <Route path="doctor/*" element={<Doctor />} />
+      <Route path="user/*" element={<User />} />
+    </Routes>
+  )
+}
 
 const Dashboard = () => {
   return (
-    <div className='w-4/5'>
-        <DashboardRoutes />
+    <div className='w-full md:w-4/5'>
+      <DashboardRoutes />
     </div>
   )
 }

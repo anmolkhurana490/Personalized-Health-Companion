@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaRobot } from "react-icons/fa6";
 import axios from 'axios';
 
-import { AppContext } from "../../../AppProvider"
+import { AppContext } from "../../../AppProvider";
 
 const backendURL = "https://personalized-health-companion-backend.vercel.app";
 
@@ -12,13 +12,13 @@ const AIHealthAssistant = () => {
 
     const [messages, setMessages] = useState([{ role: "assistant", text: "What's in your mind?" }]);
     const [input, setInput] = useState("");
-    const inputRef = useRef(null)
+    const inputRef = useRef(null);
 
-    const [currResponse, setCurrResponse] = useState("")
-    const [currResIndex, setCurrResIndex] = useState(0)
+    const [currResponse, setCurrResponse] = useState("");
+    const [currResIndex, setCurrResIndex] = useState(0);
 
-    const [loading, setLoading] = useState(false)
-    const typingSpeed = 30 // seconds per char
+    const [loading, setLoading] = useState(false);
+    const typingSpeed = 30; // milliseconds per char
 
     const getResponse = async (messages) => {
         try {
@@ -27,8 +27,7 @@ const AIHealthAssistant = () => {
         } catch (err) {
             console.log("error:", err);
         }
-    }
-
+    };
 
     const sendMessage = async (e) => {
         e.preventDefault();
@@ -41,20 +40,19 @@ const AIHealthAssistant = () => {
 
         const res = await getResponse([...messages, userMessage]);
 
-        setCurrResIndex(0)
+        setCurrResIndex(0);
         if (res.message) setCurrResponse(res.message);
         else setCurrResponse("Sorry, try again next time!");
 
         setLoading(false);
-
     };
 
     useEffect(() => {
-        if (loading == false && messages.length > 1)
-            setMessages([...messages, { role: "assistant", text: currResponse }])
-
+        if (!loading && messages.length > 1) {
+            setMessages([...messages, { role: "assistant", text: currResponse }]);
+        }
         inputRef.current.focus();
-    }, [loading])
+    }, [loading]);
 
     useEffect(() => {
         let timeOut;
@@ -62,60 +60,69 @@ const AIHealthAssistant = () => {
         if (messages[0].text && currResIndex <= messages[messages.length - 1].text.length) {
             timeOut = setTimeout(() => {
                 setCurrResponse(messages[messages.length - 1].text.substring(0, currResIndex));
-                setCurrResIndex(prevIndex => prevIndex + 1);
+                setCurrResIndex((prevIndex) => prevIndex + 1);
             }, typingSpeed);
         }
 
         return () => clearTimeout(timeOut);
-    }, [currResponse, currResIndex])
+    }, [currResponse, currResIndex]);
 
     return (
-        <div className="h-[75vh] p-4 bg-white rounded shadow">
+        <div className={`h-[75vh] p-4 rounded shadow ${darkTheme ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"}`}>
             <h2 className="text-2xl font-semibold mb-2">AI Health Assistant</h2>
-            <p>AI Doctor Chat</p>
-            <div className="h-3/4 mt-4 py-2 bg-gray-100 rounded">
-                <div className="flex flex-col-reverse gap-y-2 max-h-full custom-scrollbar overflow-y-auto mb-4">
-                    <div className={`flex items-center gap-2 mx-4 ${darkTheme ? 'text-white' : 'text-gray-800'}`}>
-                        {(loading || currResponse) ? <FaRobot className='text-lg' /> : ''}
-                        {loading ? (
-                            darkTheme ? (
-                                <img src="/typing-light.gif" className="w-8" />
-                            ) : (
-                                <img src="/typing-dark.gif" className="bg-white w-8" />
-                            )
-                        ) : currResponse ? (
-                            <p className={`${darkTheme ? 'bg-blue-900' : 'bg-blue-200'} rounded px-2 py-1 max-w-[70%] text-wrap break-words`}>{currResponse}</p>
-                        ) : ''}
-                    </div>
-
+            <p className="text-gray-600 dark:text-gray-400">AI Doctor Chat</p>
+            <div className={`h-3/4 mt-4 py-2 rounded ${darkTheme ? "bg-gray-700" : "bg-gray-100"}`}>
+                <div className="flex flex-col-reverse gap-y-2 max-h-full custom-scrollbar overflow-y-auto mb-4 px-4">
                     {messages.length === 0 ? (
-                        <p className="text-gray-700 mx-4">Your conversation will appear here...</p>
+                        <p className="text-gray-700 dark:text-gray-300">Your conversation will appear here...</p>
                     ) : (
-                        [...messages].reverse().map((message, index) => {
-                            if (index != 0 || message.role != 'assistant')
-                                return (<div key={index} className={`flex gap-2 items-center mx-4 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                                    {message.role === 'user' ? <FaRegUserCircle className='text-lg' /> : <FaRobot className='text-lg' />}
-                                    <p className={`inline-block p-2 rounded max-w-[70%] text-wrap break-words ${message.role === 'user' ? 'bg-blue-100' : 'bg-blue-200'}`}>
-                                        {message.text}
-                                    </p>
-                                </div>)
-                        })
+                        [...messages].reverse().map((message, index) => (
+                            <div
+                                key={index}
+                                className={`flex gap-2 items-center ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
+                            >
+                                {message.role === 'user' ? (
+                                    <FaRegUserCircle className="text-lg" />
+                                ) : (
+                                    <FaRobot className="text-lg" />
+                                )}
+                                <p
+                                    className={`inline-block p-2 rounded max-w-[70%] text-wrap break-words ${message.role === 'user'
+                                            ? darkTheme
+                                                ? "bg-blue-900 text-gray-100"
+                                                : "bg-blue-100 text-gray-900"
+                                            : darkTheme
+                                                ? "bg-blue-700 text-gray-100"
+                                                : "bg-blue-200 text-gray-900"
+                                        }`}
+                                >
+                                    {message.text}
+                                </p>
+                            </div>
+                        ))
                     )}
                 </div>
 
-                <form onSubmit={sendMessage} className="flex items-center mx-4">
+                <form onSubmit={sendMessage} className="flex items-center px-4">
                     <input
                         type="text"
                         ref={inputRef}
                         value={input}
                         disabled={loading}
                         onChange={(e) => setInput(e.target.value)}
-                        className="flex-1 p-2 border rounded-l"
+                        className={`flex-1 p-2 border rounded-l ${darkTheme
+                                ? "border-gray-600 bg-gray-700 text-gray-100"
+                                : "border-gray-300 bg-white text-gray-900"
+                            }`}
                         placeholder="Ask your health question..."
                     />
                     <button
-                        className="p-2 bg-blue-500 text-white rounded-r"
-                        type='submit'
+                        className={`p-2 rounded-r ${darkTheme
+                                ? "bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-gray-100"
+                                : "bg-blue-500 hover:bg-blue-600 disabled:bg-blue-700 text-white"
+                            }`}
+                        type="submit"
+                        disabled={loading}
                     >
                         Send
                     </button>
@@ -123,6 +130,6 @@ const AIHealthAssistant = () => {
             </div>
         </div>
     );
-}
+};
 
-export default AIHealthAssistant
+export default AIHealthAssistant;
