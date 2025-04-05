@@ -87,7 +87,7 @@ router.post('/login', async (req, res) => {
         delete found.authentication_details.password;
 
         const token = signToken({ _id: found._id, username: found.authentication_details, email: found.personal_info, role: req.body.role });
-        res.cookie('loginToken', token, { maxAge: Date.now() + (72 * 60 * 60 * 1000), httpOnly: true, sameSite: 'none' }); // expires in 72hrs
+        res.cookie('loginToken', token, { maxAge: Date.now() + (72 * 60 * 60 * 1000), httpOnly: true, secure: true, sameSite: 'none' }); // expires in 72hrs
 
         res.send({ status: 'success', path: '/dashboard', profile: found, role: req.body.role });
     }
