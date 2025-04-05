@@ -15,7 +15,7 @@ let port = 3000;
 connectDB();
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'https://personalized-health-companion.vercel.app'],
     credentials: true
 }));
 
