@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
+import { AppContext } from "../../../AppProvider";
 
 const Patients = ({ profile }) => {
+    const { darkTheme } = useContext(AppContext);
     const [patients, setPatients] = React.useState([
         {
             id: 1,
@@ -101,51 +103,72 @@ const Patients = ({ profile }) => {
     );
 
     return (
-        <div className="p-6 bg-gray-50 rounded-lg shadow-md">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-800">Patient Manager</h2>
+        <div
+            className={`p-6 rounded-lg shadow-md ${darkTheme ? "bg-gray-800 text-gray-100" : "bg-gray-50 text-gray-900"}`}
+        >
+            <h2 className="text-2xl font-semibold mb-6">Patient Manager</h2>
             <input
                 type="text"
                 placeholder="Search by name..."
-                className="border border-gray-300 p-3 rounded-lg mb-6 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className={`border p-3 rounded-lg mb-6 w-full focus:outline-none focus:ring-2 ${darkTheme
+                        ? "border-gray-600 bg-gray-700 text-gray-100 focus:ring-blue-400"
+                        : "border-gray-300 bg-white text-gray-900 focus:ring-blue-400"
+                    }`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
 
-            <table className="w-full border-collapse bg-white rounded-lg overflow-hidden shadow">
-                <thead className="bg-blue-500 text-white">
-                    <tr>
-                        <th className="p-3 text-left">Name</th>
-                        <th className="p-3 text-left">Age</th>
-                        <th className="p-3 text-left">Gender</th>
-                        <th className="p-3 text-left">Medical History</th>
-                        <th className="p-3 text-left">Last Consultation</th>
-                        <th className="p-3 text-left">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredPatients.sort((a, b) => new Date(b.lastConsultation) - new Date(a.lastConsultation)).map((patient) => (
-                        <tr
-                            key={patient.id}
-                            className={`border-b ${patient.emergency ? "bg-red-100" : "hover:bg-gray-100"
-                                }`}
-                        >
-                            <td className="p-3">{patient.name}</td>
-                            <td className="p-3">{patient.age}</td>
-                            <td className="p-3">{patient.gender}</td>
-                            <td className="p-3">{patient.medicalHistory}</td>
-                            <td className="p-3">{patient.lastConsultation}</td>
-                            <td className="p-3 space-x-2">
-                                <button className="text-blue-500 hover:underline mr-4">
-                                    View Profile
-                                </button>
-                                <button className="text-green-500 hover:underline">
-                                    Add Notes
-                                </button>
-                            </td>
+            <div className="overflow-x-auto">
+                <table className="w-full border-collapse rounded-lg overflow-hidden shadow">
+                    <thead className={`${darkTheme ? "bg-blue-600 text-gray-100" : "bg-blue-500 text-white"}`}>
+                        <tr>
+                            <th className="p-3 text-left">Name</th>
+                            <th className="p-3 text-left">Age</th>
+                            <th className="p-3 text-left">Gender</th>
+                            <th className="p-3 text-left">Medical History</th>
+                            <th className="p-3 text-left">Last Consultation</th>
+                            <th className="p-3 text-left">Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {filteredPatients
+                            .sort((a, b) => new Date(b.lastConsultation) - new Date(a.lastConsultation))
+                            .map((patient) => (
+                                <tr
+                                    key={patient.id}
+                                    className={`border-b ${patient.emergency
+                                            ? darkTheme
+                                                ? "bg-red-900"
+                                                : "bg-red-100"
+                                            : darkTheme
+                                                ? "hover:bg-gray-700"
+                                                : "hover:bg-gray-100"
+                                        }`}
+                                >
+                                    <td className="p-3">{patient.name}</td>
+                                    <td className="p-3">{patient.age}</td>
+                                    <td className="p-3">{patient.gender}</td>
+                                    <td className="p-3">{patient.medicalHistory}</td>
+                                    <td className="p-3">{patient.lastConsultation}</td>
+                                    <td className="p-3 space-x-2">
+                                        <button
+                                            className={`hover:underline ${darkTheme ? "text-blue-400" : "text-blue-500"
+                                                }`}
+                                        >
+                                            View Profile
+                                        </button>
+                                        <button
+                                            className={`hover:underline ${darkTheme ? "text-green-400" : "text-green-500"
+                                                }`}
+                                        >
+                                            Add Notes
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };

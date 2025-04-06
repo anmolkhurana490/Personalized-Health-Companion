@@ -36,23 +36,29 @@ const Navbar = () => {
 
     return (
         <nav className={`p-4 ${darkTheme ? 'bg-gray-900 text-white' : 'bg-blue-600 text-white'}`}>
-            <div className="container mx-auto flex justify-between items-center">
+            <div className="container mx-auto flex flex-wrap justify-between items-center">
                 <div className="text-2xl font-bold">VitalSphere</div>
 
-                <div className="flex items-center gap-2 ml-auto md:flex-row md:space-x-4">
+                <div className="flex items-center gap-2 ml-auto flex-row md:space-x-4">
                     {loggedIn ? (
                         <button
                             onClick={() => logoutHandler(setLoggedIn, setProfile, navigate)}
-                            className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-200"
+                            className={`px-4 py-2 rounded hover:bg-gray-200 ${darkTheme ? 'bg-blue-700 text-white' : 'bg-white text-blue-600'}`}
                         >
                             Logout
                         </button>
                     ) : (
-                        <div className="flex flex-col md:flex-row md:space-x-4">
-                            <a href="/login" className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-200">
+                        <div className="flex flex-col md:flex-row gap-x-4 gap-y-1">
+                            <a
+                                href="/login"
+                                className={`px-4 py-2 rounded hover:bg-gray-200 ${darkTheme ? 'bg-blue-700 text-white' : 'bg-white text-blue-600'}`}
+                            >
                                 Login
                             </a>
-                            <a href="/signup" className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-200">
+                            <a
+                                href="/signup"
+                                className={`px-4 py-2 rounded hover:bg-gray-200 ${darkTheme ? 'bg-blue-700 text-white' : 'bg-white text-blue-600'}`}
+                            >
                                 Sign Up
                             </a>
                         </div>
