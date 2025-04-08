@@ -13,7 +13,8 @@ const Appointments = () => {
         {
             id: 1,
             date: '2023-10-01',
-            doctor: 'Dr. Smith',
+            doctorId: 1,
+            doctor: 'Dr. John Doe',
             attended: true,
             available: false,
             prescription: 'Take 1 tablet daily',
@@ -21,7 +22,8 @@ const Appointments = () => {
         {
             id: 2,
             date: '2023-11-15',
-            doctor: 'Dr. Johnson',
+            doctorId: 2,
+            doctor: 'Dr. Jane Smith',
             attended: false,
             available: true,
             prescription: '',
@@ -33,8 +35,11 @@ const Appointments = () => {
     const bookNewAppointment = () => {
         navigate('/dashboard/user/doctor-consultation?tab=book-appointment');
     };
+    const joinChat = (id, doctorId) => {
+        navigate('/dashboard/user/doctor-consultation?tab=doctor-chat', { state: { id, doctorId } });
+    };
 
-    const joinAppointment = (id) => {
+    const joinVideoCall = (id) => {
         window.open(`/user/video-call/${id}`, '_blank');
     };
 
@@ -70,7 +75,7 @@ const Appointments = () => {
             </div>
 
             <div className={`mt-4 gap-4 ${view === 'list' ? 'flex flex-col' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
-                {appointments.map((appointment) => (
+                {appointments.sort((a, b) => new Date(b.date) - new Date(a.date)).map((appointment) => (
                     <div
                         key={appointment.id}
                         className={`w-full flex flex-wrap gap-2 justify-between items-center p-4 border rounded transition duration-300 ${darkTheme ? 'border-gray-700 hover:shadow-gray-700' : 'border-gray-300 hover:shadow-lg'
@@ -84,12 +89,19 @@ const Appointments = () => {
                             <p><strong>Prescription:</strong> {appointment.prescription}</p>
                         ) : (
                             appointment.available ? (
-                                <button
-                                    onClick={() => joinAppointment(appointment.id)}
-                                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
-                                >
-                                    Join Appointment
-                                </button>
+                                <div className='flex gap-2'>
+                                    <button onClick={() => joinChat(appointment.id, appointment.doctorId)}
+                                        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300"
+                                    >
+                                        Chat
+                                    </button>
+                                    <button
+                                        onClick={() => joinVideoCall(appointment.id)}
+                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
+                                    >
+                                        Video Call
+                                    </button>
+                                </div>
                             ) : (
                                 <p className="text-red-500"><strong>Missed</strong></p>
                             )

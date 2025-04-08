@@ -9,6 +9,7 @@ import '../../styles.css';
 
 const DoctorConsultation = () => {
     const location = useLocation();
+    const { appointmentId, doctorId } = location.state || {};
     const { darkTheme } = useContext(AppContext);
     const [activeTab, setActiveTab] = useState("doctor-chat");
 
@@ -34,7 +35,7 @@ const DoctorConsultation = () => {
                     <Tab className={`role-tab flex-grow text-center py-1 ${darkTheme ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-900'}`}>Book New Appointment</Tab>
                 </TabList>
 
-                <TabPanel><ChatWithDoctor darkTheme={darkTheme} /></TabPanel>
+                <TabPanel><ChatWithDoctor darkTheme={darkTheme} preSelectedDoctorId={doctorId} appointmentId={appointmentId} /></TabPanel>
                 <TabPanel><VideoCallDoctor darkTheme={darkTheme} /></TabPanel>
                 <TabPanel><BookAppointment darkTheme={darkTheme} /></TabPanel>
             </Tabs>
@@ -42,13 +43,20 @@ const DoctorConsultation = () => {
     );
 };
 
-const ChatWithDoctor = ({ darkTheme }) => {
+const ChatWithDoctor = ({ darkTheme, preSelectedDoctorId, appointmentId }) => {
     const [selectedDoctor, setSelectedDoctor] = useState(null);
 
     const assignedDoctors = [
         { id: 1, name: "Dr. John Doe" },
         { id: 2, name: "Dr. Jane Smith" },
     ];
+
+    useEffect(() => {
+        if (preSelectedDoctorId) {
+            const doctor = assignedDoctors.find((doc) => doc.id === preSelectedDoctorId);
+            if (doctor) setSelectedDoctor(doctor);
+        }
+    }, [preSelectedDoctorId]);
 
     const onBack = () => setSelectedDoctor(null);
 
@@ -174,31 +182,60 @@ const BookAppointment = ({ darkTheme }) => {
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
 
+    const avilableDoctors = [
+        { id: 1, name: "Dr. John Doe", specialty: "Cardiologist", experience: "10 years" },
+        { id: 2, name: "Dr. Jane Smith", specialty: "Dermatologist", experience: "8 years" },
+        { id: 3, name: "Dr. Emily Johnson", specialty: "Pediatrician", experience: "5 years" },
+    ]
+
     const bookAppointment = () => {
         console.log({ doctor, date, time });
         alert("Appointment booked successfully!");
     };
 
     return (
-        <div className={`max-h-[50vh] flex flex-wrap justify-between items-center rounded-lg p-4 ${darkTheme ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}>
-            <div className="w-full md:w-2/5 mb-4 md:mb-0">
-                <label className="block">Select Doctor:</label>
-                <select value={doctor} onChange={(e) => setDoctor(e.target.value)} className={`w-full p-2 rounded ${darkTheme ? 'bg-gray-600 text-white' : 'bg-white text-gray-900'}`}>
-                    <option value="">-- Select --</option>
-                    <option value="Dr. John Doe">Dr. John Doe</option>
-                    <option value="Dr. Jane Smith">Dr. Jane Smith</option>
-                </select>
+        <>
+            <div className={`flex flex-wrap justify-around items-center gap-2 rounded-lg p-4 ${darkTheme ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}>
+                <div className="w-full mb-4">
+                    <label className="block mb-2">Select Doctor:</label>
+                    <div className="flex flex-wrap items-center gap-4">
+                        {avilableDoctors.map((doc) => (
+                            <div
+                                key={doc.id}
+                                className={`w-full lg:w-auto flex items-center gap-4 p-4 rounded shadow cursor-pointer ${darkTheme ? 'bg-gray-600' : 'bg-white'} ${doctor === doc.name ? 'border-2 border-blue-500' : ''}`}
+                                onClick={() => setDoctor(doc.name)}
+                            >
+                                <img src="/profilePicture/1737561841070-anmol_photo.jpg" alt="Doctor Profile" className="w-12 h-12 rounded-full object-cover" />
+                                <div className="flex-grow">
+                                    <p className="text-lg font-semibold">{doc.name}</p>
+                                    <p className={`text-sm ${darkTheme ? 'text-gray-300' : 'text-gray-600'}`}>{doc.specialty}</p>
+                                    <p className={`text-sm ${darkTheme ? 'text-gray-400' : 'text-gray-500'}`}>{doc.experience}</p>
+                                </div>
+                                <input
+                                    type="radio"
+                                    name="doctor"
+                                    checked={doctor === doc.name}
+                                    onChange={() => setDoctor(doc.name)}
+                                    className="w-5 h-5"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="w-full md:w-50 mb-4 md:mb-0">
+                    <label className="block">Select Date:</label>
+                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={`w-full p-2 rounded ${darkTheme ? 'bg-gray-600 text-white' : 'bg-white text-gray-900'}`} />
+                </div>
+
+                <div className="w-full md:w-50 mb-4 md:mb-0">
+                    <label className="block">Select Time:</label>
+                    <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className={`w-full p-2 rounded ${darkTheme ? 'bg-gray-600 text-white' : 'bg-white text-gray-900'}`} />
+                </div>
+
+                <button onClick={bookAppointment} className="bg-blue-500 text-white w-50 px-4 py-2 rounded">Book</button>
             </div>
-            <div className="w-full md:w-auto mb-4 md:mb-0">
-                <label className="block">Select Date:</label>
-                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={`w-full p-2 rounded ${darkTheme ? 'bg-gray-600 text-white' : 'bg-white text-gray-900'}`} />
-            </div>
-            <div className="w-full md:w-auto mb-4 md:mb-0">
-                <label className="block">Select Time:</label>
-                <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className={`w-full p-2 rounded ${darkTheme ? 'bg-gray-600 text-white' : 'bg-white text-gray-900'}`} />
-            </div>
-            <button onClick={bookAppointment} className="bg-blue-500 text-white px-4 py-2 rounded">Book</button>
-        </div>
+        </>
     );
 };
 

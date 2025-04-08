@@ -132,7 +132,7 @@ const FilteredAppointments = ({ appointments, activeTab, darkTheme }) => {
             {appointments.map(appointment => (
                 <div
                     key={appointment.id}
-                    className={`grid gap-4 p-4 rounded shadow ${darkTheme ? "bg-gray-700 text-gray-100" : "bg-gray-100 text-gray-900"} md:grid-cols-2 lg:grid-cols-4`}
+                    className={`flex flex-wrap justify-between items-center gap-4 p-4 rounded shadow ${darkTheme ? "bg-gray-700 text-gray-100" : "bg-gray-100 text-gray-900"} md:grid-cols-2 lg:grid-cols-4`}
                 >
                     <p><strong>Patient:</strong> {appointment.patient}</p>
                     <p><strong>Date:</strong> {appointment.date}</p>
