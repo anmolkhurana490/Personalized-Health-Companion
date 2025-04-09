@@ -19,9 +19,7 @@ const Appointments = () => {
 
     const filteredAppointments = appointments.filter(appointment =>
         appointment.type === activeTab
-    ).sort((a, b) => {
-        return new Date(b.date) - new Date(a.date);
-    });
+    );
 
     const options = ["upcoming", "past"];
 

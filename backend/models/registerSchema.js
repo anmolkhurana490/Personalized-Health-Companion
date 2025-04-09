@@ -44,7 +44,9 @@ const doctorSchema = new Schema({
     optional: {
         biography: { type: String }
     },
-    profilePicture: { type: String }
+    profilePicture: { type: String },
+
+    appointments: [{ type: Schema.Types.ObjectId, ref: "Appointment" }]
 });
 
 const userSchema = new Schema({
@@ -59,13 +61,15 @@ const userSchema = new Schema({
         username: { type: String },
         password: { type: String, required: true, minlength: 4, maxlength: 9 },
     },
-    health_info: { type: Schema.Types.ObjectId, ref: "HealthRecord", required: true },
     emergency_contact: {
         emergencyContactName: { type: String, required: true },
         emergencyContactRelationship: { type: String, required: true },
         emergencyContactPhone: { type: String, required: true }
     },
-    profilePicture: { type: String }
+    profilePicture: { type: String },
+
+    health_info: { type: Schema.Types.ObjectId, ref: "HealthRecord", required: true },
+    appointments: [{ type: Schema.Types.ObjectId, ref: "Appointment" }]
 });
 
 // const Admin = mongoose.model('Admin', adminSchema);

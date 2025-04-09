@@ -1,6 +1,6 @@
 import express from "express";
 import profileRouter from "./profile.js";
-import appointmentRoutes from './appointmentRoutes.js';
+import appointmentRoutes from './appointments.js';
 
 const router = express.Router();
 

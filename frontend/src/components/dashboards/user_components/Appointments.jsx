@@ -64,7 +64,7 @@ const Appointments = () => {
             </div>
 
             <div className={`mt-4 gap-4 ${view === 'list' ? 'flex flex-col' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
-                {appointments.sort((a, b) => new Date(b.date) - new Date(a.date)).map((appointment) => (
+                {appointments.map((appointment) => (
                     <div
                         key={appointment.id}
                         className={`w-full flex flex-wrap gap-2 justify-between items-center p-4 border rounded transition duration-300 ${darkTheme ? 'border-gray-700 hover:shadow-gray-700' : 'border-gray-300 hover:shadow-lg'
