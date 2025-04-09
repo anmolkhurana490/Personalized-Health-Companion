@@ -1,7 +1,7 @@
 import express from "express";
-import { Doctor, User } from "../authentication/registerSchema.js"
+import { Doctor, User } from "../models/registerSchema.js"
 import { signToken, verifyToken } from "../authentication/stateless_auth.js"
-import { HealthRecord } from "../dashboards/userRecordSchemas.js";
+import { HealthRecord } from "../models/userRecordSchemas.js";
 import multer from 'multer';
 
 const storage = multer.diskStorage({

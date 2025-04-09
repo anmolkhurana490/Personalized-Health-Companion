@@ -11,7 +11,7 @@ export const verifyToken = (data) => {
     try {
         return jwt.verify(data, process.env.JWT_SECRET_KEY);
     }
-    catch {
+    catch (e) {
         return null;
     }
 }

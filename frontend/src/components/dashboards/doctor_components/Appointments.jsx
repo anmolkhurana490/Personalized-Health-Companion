@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { AppContext } from '../../../AppProvider';
+import axios from 'axios';
 
 import 'react-tabs/style/react-tabs.css';
 import '../../styles.css';
@@ -9,82 +10,12 @@ const Appointments = () => {
     const { darkTheme } = useContext(AppContext);
     const [activeTab, setActiveTab] = React.useState('upcoming');
 
-    const appointments = [
-        {
-            id: 1,
-            patient: 'John Doe',
-            date: '2023-10-15',
-            time: '10:00 AM',
-            mode: 'Video',
-            type: 'upcoming',
-        },
-        {
-            id: 2,
-            patient: 'Jane Smith',
-            date: '2023-09-20',
-            prescription: 'Provided',
-            type: 'past',
-        },
-        {
-            id: 3,
-            patient: 'Alice Brown',
-            date: '2023-10-18',
-            time: '2:00 PM',
-            type: 'requests',
-        },
-        {
-            id: 4,
-            patient: 'Michael Johnson',
-            date: '2023-10-20',
-            time: '11:00 AM',
-            mode: 'In-person',
-            type: 'upcoming',
-        },
-        {
-            id: 5,
-            patient: 'Emily Davis',
-            date: '2023-09-15',
-            prescription: 'Not Provided',
-            type: 'past',
-        },
-        {
-            id: 6,
-            patient: 'Chris Wilson',
-            date: '2023-10-22',
-            time: '4:00 PM',
-            type: 'requests',
-        },
-        {
-            id: 7,
-            patient: 'Sophia Martinez',
-            date: '2023-10-25',
-            time: '9:00 AM',
-            mode: 'Video',
-            type: 'upcoming',
-        },
-        {
-            id: 8,
-            patient: 'Daniel Lee',
-            date: '2023-09-10',
-            prescription: 'Provided',
-            type: 'past',
-        },
-        {
-            id: 9,
-            patient: 'Olivia Garcia',
-            date: '2023-10-28',
-            time: '3:00 PM',
-            type: 'requests',
-        },
-        {
-            id: 10,
-            patient: 'Liam Hernandez',
-            date: '2023-10-30',
-            time: '1:00 PM',
-            mode: 'In-person',
-            type: 'upcoming',
-        },
-    ];
+    const [appointments, setAppointments] = useState([]);
+
+    useEffect(async () => {
+        const { data } = await axios.get(`${backendURL}/appointments/doctor`, { withCredentials: true });
+        setAppointments(data.appointments);
+    }, []);
 
     const filteredAppointments = appointments.filter(appointment =>
         appointment.type === activeTab

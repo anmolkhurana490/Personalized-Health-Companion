@@ -1,34 +1,23 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 import { FaListUl } from "react-icons/fa";
 import { IoGrid } from "react-icons/io5";
 import { AppContext } from '../../../AppProvider';
 
+const backendURL = "https://personalized-health-companion-backend.vercel.app";
+
 const Appointments = () => {
     const [view, setView] = useState('list');
     const { darkTheme } = useContext(AppContext);
 
-    const [appointments, setAppointments] = useState([
-        {
-            id: 1,
-            date: '2023-10-01',
-            doctorId: 1,
-            doctor: 'Dr. John Doe',
-            attended: true,
-            available: false,
-            prescription: 'Take 1 tablet daily',
-        },
-        {
-            id: 2,
-            date: '2023-11-15',
-            doctorId: 2,
-            doctor: 'Dr. Jane Smith',
-            attended: false,
-            available: true,
-            prescription: '',
-        },
-    ]);
+    const [appointments, setAppointments] = useState([]);
+
+    useEffect(async () => {
+        const { data } = await axios.get(`${backendURL}/appointments/user`, { withCredentials: true });
+        setAppointments(data.appointments);
+    }, []);
 
     const navigate = useNavigate();
 
