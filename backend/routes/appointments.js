@@ -2,6 +2,7 @@ import express from 'express';
 import Appointment from '../models/appointmentsSchema.js';
 import { Doctor, User } from '../models/registerSchema.js';
 import cron from 'node-cron';
+import { HealthRecord } from '../models/userRecordSchemas.js';
 
 const router = express.Router();
 
@@ -9,10 +10,10 @@ const router = express.Router();
 router.post('/book', async (req, res) => {
     try {
         const userId = req.data._id;
-        const { doctorId, dateTime, reason, type } = req.body;
+        const { doctor, dateTime, reason, type } = req.body;
 
         // Create new appointment
-        const appointment = new Appointment({ userId, doctorId, dateTime, reason, type });
+        const appointment = new Appointment({ user: userId, doctor: doctor, dateTime, reason, type });
         await appointment.save();
 
         // Update the user's appointments array
@@ -21,9 +22,15 @@ router.post('/book', async (req, res) => {
         });
 
         // Update the doctor's appointments array
-        await Doctor.findByIdAndUpdate(doctorId, {
+        await Doctor.findByIdAndUpdate(doctor, {
             $push: { appointments: appointment._id },
         });
+
+        // add doctor to consulting doctors list in health record
+        await HealthRecord.findOneAndUpdate(
+            { _id: req.data.health_info },
+            { $addToSet: { consultingDoctors: { doctor: doctor, consultationDate: new Date(dateTime), notes: reason } } }
+        );
 
         res.status(201).json({ success: true, message: "Appointment booked", appointment });
     } catch (err) {
@@ -62,7 +69,7 @@ router.get('/doctor', async (req, res) => {
 // Start Appointment
 router.put('/start', async (req, res) => {
     try {
-        if (req.data.role !== 'doctor' || req.data._id !== req.body.doctorId) return res.status(403).json({ success: false, message: "Unauthorized" });
+        if (req.data.role !== 'doctor' || req.data._id !== req.body.doctor) return res.status(403).json({ success: false, message: "Unauthorized" });
 
         const { id } = req.body;
         await Appointment.findByIdAndUpdate(id, { status: 'ongoing' });
@@ -76,7 +83,7 @@ router.put('/start', async (req, res) => {
 // Complete Appointment
 router.put('/complete', async (req, res) => {
     try {
-        if (req.data.role !== 'doctor' || req.data._id !== req.body.doctorId) return res.status(403).json({ success: false, message: "Unauthorized" });
+        if (req.data.role !== 'doctor' || req.data._id !== req.body.doctor) return res.status(403).json({ success: false, message: "Unauthorized" });
 
         const { id } = req.body;
         await Appointment.findByIdAndUpdate(id, { status: 'completed', prescription: req.body.prescription });
@@ -90,7 +97,7 @@ router.put('/complete', async (req, res) => {
 // Cancel Appointment
 router.put('/cancel', async (req, res) => {
     try {
-        if (req.data.role !== 'doctor' || req.data._id !== req.body.doctorId) return res.status(403).json({ success: false, message: "Unauthorized" });
+        if (req.data.role !== 'doctor' || req.data._id !== req.body.doctor) return res.status(403).json({ success: false, message: "Unauthorized" });
 
         const { id } = req.body;
         await Appointment.findByIdAndUpdate(id, { status: 'cancelled' });
@@ -128,5 +135,55 @@ const cancelExpiredAppointments = async () => {
 }
 
 cron.schedule('*/5 * * * *', cancelExpiredAppointments);
+
+// Get Available Doctors
+router.get('/available-doctors', async (req, res) => {
+    try {
+        let doctors = await Doctor.find({});
+        doctors = doctors.map((entry) => doctorInfoFilter(entry));
+        res.send({ status: 'success', doctors });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Get Consulted Doctors
+router.get('/consulted-doctors', async (req, res) => {
+    try {
+        const userId = req.data._id;
+        const healthRecord = await HealthRecord.findOne({ _id: req.data.health_info }).populate('consultingDoctors.doctor');
+        const consultedDoctors = healthRecord.consultingDoctors.map((entry) => doctorInfoFilter(entry));
+
+        res.send({ status: 'success', consultedDoctors });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Get Scheduled Appointments for User
+router.get('/user/scheduled', async (req, res) => {
+    try {
+        const userId = req.data._id;
+        let appointments = await Appointment.find({ user: userId, status: 'scheduled' }).populate('doctor');
+        appointments = appointments.map((entry) => ({
+            doctor: doctorInfoFilter(entry)
+        }));
+
+        res.send({ success: true, appointments });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+const doctorInfoFilter = (entry) => {
+    return {
+        id: entry.doctor._id,
+        personalInfo: entry.doctor.personalInfo,
+        profressionalInfo: entry.doctor.professionalInfo,
+        availability: entry.doctor.availability,
+        biography: entry.doctor.biography,
+        profilePicture: entry.doctor.profilePicture
+    };
+}
 
 export default router;

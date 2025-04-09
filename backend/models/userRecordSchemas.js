@@ -37,7 +37,7 @@ const healthRecordSchema = new Schema({
     // Prescriptions
     prescriptions: [
         {
-            doctorId: { type: Schema.Types.ObjectId, ref: "Doctor" }, // Which doctor prescribed
+            doctor: { type: Schema.Types.ObjectId, ref: "Doctor" }, // Which doctor prescribed
             medicines: [
                 {
                     medicineName: { type: String },
@@ -52,7 +52,7 @@ const healthRecordSchema = new Schema({
     // Consulting Doctors (Past Appointments)
     consultingDoctors: [
         {
-            doctorId: { type: Schema.Types.ObjectId, ref: "Doctor" },
+            doctor: { type: Schema.Types.ObjectId, ref: "Doctor" },
             consultationDate: { type: Date, default: Date.now },
             notes: { type: String }
         }

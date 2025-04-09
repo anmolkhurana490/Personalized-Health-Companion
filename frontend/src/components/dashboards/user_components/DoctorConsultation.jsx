@@ -47,15 +47,25 @@ const DoctorConsultation = () => {
 
 const ChatWithDoctor = ({ darkTheme, preSelectedDoctorId, appointmentId }) => {
     const [selectedDoctor, setSelectedDoctor] = useState(null);
+    const [consultedDoctors, setConsultedDoctors] = useState([]);
 
-    const assignedDoctors = [
-        { id: 1, name: "Dr. John Doe" },
-        { id: 2, name: "Dr. Jane Smith" },
-    ];
+    useEffect(async () => {
+        try {
+            const response = await axios.get(`${backendURL}/dashboard/consulted-doctors`, { withCredentials: true });
+            setConsultedDoctors(response.data.consultedDoctors);
+        } catch (error) {
+            console.error('Error fetching consulted doctors:', error);
+        }
+    }, []);
+
+    // const assignedDoctors = [
+    //     { id: 1, name: "Dr. John Doe" },
+    //     { id: 2, name: "Dr. Jane Smith" },
+    // ];
 
     useEffect(() => {
         if (preSelectedDoctorId) {
-            const doctor = assignedDoctors.find((doc) => doc.id === preSelectedDoctorId);
+            const doctor = consultedDoctors.find((doc) => doc.id === preSelectedDoctorId);
             if (doctor) setSelectedDoctor(doctor);
         }
     }, [preSelectedDoctorId]);
@@ -69,12 +79,12 @@ const ChatWithDoctor = ({ darkTheme, preSelectedDoctorId, appointmentId }) => {
             ) : (
                 <>
                     <p className=''>Please select a doctor to start chatting.</p>
-                    {assignedDoctors.map((doc) => (
+                    {consultedDoctors.map((doc) => (
                         <div key={doc.id} className={`flex items-center gap-4 p-2 mb-2 rounded shadow ${darkTheme ? 'bg-gray-600' : 'bg-white'}`}>
-                            <img src="/profilePicture/1737561841070-anmol_photo.jpg" alt="Doctor Profile" className="w-10 h-10 rounded-full object-cover" />
+                            <img src={`/profilePicture/${doc.profilePicture}`} alt="Doctor Profile" className="w-10 h-10 rounded-full object-cover" />
                             <div className="flex-grow">
-                                <p className="text-lg font-semibold">{doc.name}</p>
-                                <p className={`text-sm ${darkTheme ? 'text-gray-300' : 'text-gray-600'}`}>General Practitioner</p>
+                                <p className="text-lg font-semibold">{doc.personalInfo.name}</p>
+                                <p className={`text-sm ${darkTheme ? 'text-gray-300' : 'text-gray-600'}`}>{doc.professionalInfo.speciality}</p>
                             </div>
                             <button onClick={() => setSelectedDoctor(doc)} className="bg-blue-500 text-white px-4 py-2 rounded">Chat</button>
                         </div>
@@ -109,10 +119,10 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
                 </button>
 
                 <div className="flex items-center gap-4">
-                    <img src="/profilePicture/1737561841070-anmol_photo.jpg" alt="Doctor Profile" className="w-10 h-10 rounded-full object-cover" />
+                    <img src={`/profilePicture/${selectedDoctor.profilePicture}`} alt="Doctor Profile" className="w-10 h-10 rounded-full object-cover" />
                     <div className="flex-grow">
-                        <p className="text-lg font-semibold">{selectedDoctor.name}</p>
-                        <p className="text-sm text-gray-500">General Practitioner</p>
+                        <p className="text-lg font-semibold">{selectedDoctor.personalInfo.name}</p>
+                        <p className="text-sm text-gray-500">{selectedDoctor.professionalInfo.speciality}</p>
                     </div>
                 </div>
             </div>
@@ -141,10 +151,20 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
 };
 
 const VideoCallDoctor = ({ darkTheme }) => {
-    const scheduledAppointments = [
-        { id: 1, doctor: { name: "Dr. John Doe" }, dateTime: "2025-02-25T10:00:00" },
-        { id: 2, doctor: { name: "Dr. Jane Smith" }, dateTime: "2025-02-22T16:41:00" },
-    ];
+    const [scheduledAppointments, setScheduledAppointments] = useState([]);
+    // const scheduledAppointments = [
+    //     { id: 1, doctor: { name: "Dr. John Doe" }, dateTime: "2025-02-25T10:00:00" },
+    //     { id: 2, doctor: { name: "Dr. Jane Smith" }, dateTime: "2025-02-22T16:41:00" },
+    // ];
+
+    useEffect(async () => {
+        try {
+            const response = await axios.get(`${backendURL}/dashboard/appointments/user/scheduled`, { withCredentials: true });
+            setScheduledAppointments(response.data.appointments);
+        } catch (error) {
+            console.error("Error fetching scheduled appointments:", error);
+        }
+    }, []);
 
     const startCall = (id) => {
         window.open(`/user/video-call/${id}`, '_blank');
@@ -179,7 +199,7 @@ const VideoCallDoctor = ({ darkTheme }) => {
     );
 };
 
-const BookAppointment = ({ darkTheme }) => {
+const BookAppointment = async ({ darkTheme }) => {
     const [doctorId, setDoctorId] = useState("");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
@@ -187,11 +207,22 @@ const BookAppointment = ({ darkTheme }) => {
     const [reason, setReason] = useState("");
     const [error, setError] = useState("");
 
-    const avilableDoctors = [
-        { id: 1, name: "Dr. John Doe", specialty: "Cardiologist", experience: "10 years" },
-        { id: 2, name: "Dr. Jane Smith", specialty: "Dermatologist", experience: "8 years" },
-        { id: 3, name: "Dr. Emily Johnson", specialty: "Pediatrician", experience: "5 years" },
-    ]
+    const [avilableDoctors, setAvilableDoctors] = useState([]);
+
+    useEffect(async () => {
+        try {
+            const response = await axios.get(`${backendURL}/dashboard/appointments/available-doctors`, { withCredentials: true });
+            setAvilableDoctors(response.data.doctors);
+        } catch (error) {
+            console.error('Error fetching available doctors:', error);
+        }
+    }, []);
+
+    // const avilableDoctors = [
+    //     { id: 1, name: "Dr. John Doe", specialty: "Cardiologist", experience: "10 years" },
+    //     { id: 2, name: "Dr. Jane Smith", specialty: "Dermatologist", experience: "8 years" },
+    //     { id: 3, name: "Dr. Emily Johnson", specialty: "Pediatrician", experience: "5 years" },
+    // ]
 
     const bookAppointment = async () => {
         if (doctorId && date && time) {
