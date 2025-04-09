@@ -97,6 +97,7 @@ const Appointments = () => {
                         )}
                     </div>
                 ))}
+                {!appointments.length && <p>No appointments available.</p>}
             </div>
         </div>
     );

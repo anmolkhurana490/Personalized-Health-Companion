@@ -23,7 +23,7 @@ const Appointments = () => {
         return new Date(b.date) - new Date(a.date);
     });
 
-    const options = ["upcoming", "past", "requests"];
+    const options = ["upcoming", "past"];
 
     return (
         <div
@@ -78,20 +78,16 @@ const FilteredAppointments = ({ appointments, activeTab, darkTheme }) => {
                                 <button className={`px-4 py-2 rounded ${darkTheme ? "bg-blue-500 text-white" : "bg-blue-500 text-white"} hover:bg-blue-600`}>Join Call</button>
                                 <button className={`px-4 py-2 rounded ${darkTheme ? "bg-green-500 text-white" : "bg-green-500 text-white"} hover:bg-green-600`}>Chat</button>
                                 <button className={`px-4 py-2 rounded ${darkTheme ? "bg-gray-600 text-gray-100" : "bg-gray-300 text-gray-900"} hover:bg-gray-400`}>View Profile</button>
+                                <button className={`px-4 py-2 rounded ${darkTheme ? "bg-red-600 text-gray-100" : "bg-red-300 text-gray-900"} hover:bg-red-400`}>Cancel</button>
                             </>
                         )}
                         {activeTab === 'past' && (
                             <button className={`px-4 py-2 rounded ${darkTheme ? "bg-gray-600 text-gray-100" : "bg-gray-300 text-gray-900"} hover:bg-gray-400`}>View Details</button>
                         )}
-                        {activeTab === 'requests' && (
-                            <>
-                                <button className={`px-4 py-2 rounded ${darkTheme ? "bg-green-500 text-white" : "bg-green-500 text-white"} hover:bg-green-600`}>Accept</button>
-                                <button className={`px-4 py-2 rounded ${darkTheme ? "bg-red-500 text-white" : "bg-red-500 text-white"} hover:bg-red-600`}>Reject</button>
-                            </>
-                        )}
                     </div>
                 </div>
             ))}
+            {!appointments.length && <p>No appointments available.</p>}
         </div>
     );
 };
