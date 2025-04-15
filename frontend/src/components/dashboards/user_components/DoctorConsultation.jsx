@@ -272,8 +272,8 @@ const BookAppointment = ({ darkTheme }) => {
                                 <img src="/profilePicture/1737561841070-anmol_photo.jpg" alt="Doctor Profile" className="w-12 h-12 rounded-full object-cover" />
                                 <div className="flex-grow">
                                     <p className="text-lg font-semibold">{doc.personal_info.fullName}</p>
-                                    <p className={`text-sm ${darkTheme ? 'text-gray-300' : 'text-gray-600'}`}>{doc.professional_info.speciality}</p>
-                                    <p className={`text-sm ${darkTheme ? 'text-gray-400' : 'text-gray-500'}`}>{doc.professional_info.yearsOfExperience}</p>
+                                    <p className={`text-sm ${darkTheme ? 'text-gray-300' : 'text-gray-600'}`}>Speciality: {doc.professional_info.speciality}</p>
+                                    <p className={`text-sm ${darkTheme ? 'text-gray-400' : 'text-gray-500'}`}>Experience: {doc.professional_info.yearsOfExperience} years</p>
                                 </div>
                                 <input
                                     type="radio"
