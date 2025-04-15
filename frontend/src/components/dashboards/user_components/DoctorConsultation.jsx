@@ -3,11 +3,13 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { IoArrowBackOutline } from "react-icons/io5";
 import { useLocation } from 'react-router-dom';
 import { AppContext } from '../../../AppProvider';
+import axios from 'axios';
 
 import 'react-tabs/style/react-tabs.css';
 import '../../styles.css';
 
-const backendURL = "https://personalized-health-companion-backend.vercel.app";
+// const backendURL = "https://personalized-health-companion-backend.vercel.app";
+const backendURL = "http://localhost:3000";
 
 const DoctorConsultation = () => {
     const location = useLocation();
@@ -49,13 +51,17 @@ const ChatWithDoctor = ({ darkTheme, preSelectedDoctorId, appointmentId }) => {
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [consultedDoctors, setConsultedDoctors] = useState([]);
 
-    useEffect(async () => {
-        try {
-            const response = await axios.get(`${backendURL}/dashboard/consulted-doctors`, { withCredentials: true });
-            setConsultedDoctors(response.data.consultedDoctors);
-        } catch (error) {
-            console.error('Error fetching consulted doctors:', error);
+    useEffect(() => {
+        const fetchConsultedDoctors = async () => {
+            try {
+                const response = await axios.get(`${backendURL}/dashboard/appointments/consulted-doctors`, { withCredentials: true });
+                setConsultedDoctors(response.data.consultedDoctors);
+            } catch (error) {
+                console.error('Error fetching consulted doctors:', error);
+            }
         }
+
+        fetchConsultedDoctors();
     }, []);
 
     // const assignedDoctors = [
@@ -79,7 +85,7 @@ const ChatWithDoctor = ({ darkTheme, preSelectedDoctorId, appointmentId }) => {
             ) : (
                 <>
                     <p className=''>Please select a doctor to start chatting.</p>
-                    {consultedDoctors.map((doc) => (
+                    {consultedDoctors?.map((doc) => (
                         <div key={doc.id} className={`flex items-center gap-4 p-2 mb-2 rounded shadow ${darkTheme ? 'bg-gray-600' : 'bg-white'}`}>
                             <img src={`/profilePicture/${doc.profilePicture}`} alt="Doctor Profile" className="w-10 h-10 rounded-full object-cover" />
                             <div className="flex-grow">
@@ -157,13 +163,16 @@ const VideoCallDoctor = ({ darkTheme }) => {
     //     { id: 2, doctor: { name: "Dr. Jane Smith" }, dateTime: "2025-02-22T16:41:00" },
     // ];
 
-    useEffect(async () => {
-        try {
-            const response = await axios.get(`${backendURL}/dashboard/appointments/user/scheduled`, { withCredentials: true });
-            setScheduledAppointments(response.data.appointments);
-        } catch (error) {
-            console.error("Error fetching scheduled appointments:", error);
+    useEffect(() => {
+        async function fetchScheduledAppointments() {
+            try {
+                const response = await axios.get(`${backendURL}/dashboard/appointments/user/scheduled`, { withCredentials: true });
+                setScheduledAppointments(response.data.appointments);
+            } catch (error) {
+                console.error("Error fetching scheduled appointments:", error);
+            }
         }
+        fetchScheduledAppointments();
     }, []);
 
     const startCall = (id) => {
@@ -173,7 +182,7 @@ const VideoCallDoctor = ({ darkTheme }) => {
     return (
         <div className={`h-[50vh] overflow-y-auto custom-scrollbar rounded-lg p-4 ${darkTheme ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}>
             <label className="block mb-2">Select Appointment:</label>
-            {scheduledAppointments.map((appointment) => {
+            {scheduledAppointments?.map((appointment) => {
                 const appointmentDate = new Date(appointment.dateTime);
                 const formattedDate = appointmentDate.toLocaleDateString('en-GB');
                 const formattedTime = appointmentDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
@@ -199,7 +208,7 @@ const VideoCallDoctor = ({ darkTheme }) => {
     );
 };
 
-const BookAppointment = async ({ darkTheme }) => {
+const BookAppointment = ({ darkTheme }) => {
     const [doctorId, setDoctorId] = useState("");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
@@ -209,13 +218,16 @@ const BookAppointment = async ({ darkTheme }) => {
 
     const [avilableDoctors, setAvilableDoctors] = useState([]);
 
-    useEffect(async () => {
-        try {
-            const response = await axios.get(`${backendURL}/dashboard/appointments/available-doctors`, { withCredentials: true });
-            setAvilableDoctors(response.data.doctors);
-        } catch (error) {
-            console.error('Error fetching available doctors:', error);
+    useEffect(() => {
+        async function fetchAvailableDoctors() {
+            try {
+                const response = await axios.get(`${backendURL}/dashboard/appointments/available-doctors`, { withCredentials: true });
+                setAvilableDoctors(response.data.doctors);
+            } catch (error) {
+                console.error('Error fetching available doctors:', error);
+            }
         }
+        fetchAvailableDoctors();
     }, []);
 
     // const avilableDoctors = [
@@ -251,7 +263,7 @@ const BookAppointment = async ({ darkTheme }) => {
                 <div className="w-full">
                     <label className="block mb-2">Select Doctor:</label>
                     <div className="flex flex-wrap items-center gap-4">
-                        {avilableDoctors.map((doc) => (
+                        {avilableDoctors?.map((doc) => (
                             <div
                                 key={doc.id}
                                 className={`w-full lg:w-auto flex items-center gap-4 p-4 rounded shadow cursor-pointer ${darkTheme ? 'bg-gray-600' : 'bg-white'} ${doctorId === doc.id ? 'border-2 border-blue-500' : ''}`}
