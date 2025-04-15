@@ -152,10 +152,11 @@ router.get('/consulted-doctors', async (req, res) => {
     try {
         const userId = req.data._id;
         const healthRecord = await HealthRecord.findOne({ _id: req.data.health_info }).populate('consultingDoctors.doctor');
-        const consultedDoctors = healthRecord.consultingDoctors.map((entry) => doctorInfoFilter(entry));
+        const consultedDoctors = healthRecord?.consultingDoctors.map((entry) => doctorInfoFilter(entry));
 
         res.send({ status: 'success', consultedDoctors });
     } catch (err) {
+        console.log(err)
         res.status(500).json({ success: false, message: err.message });
     }
 });
