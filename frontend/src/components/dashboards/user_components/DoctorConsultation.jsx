@@ -88,8 +88,8 @@ const ChatWithDoctor = ({ darkTheme, preSelectedDoctorId, appointmentId }) => {
                         <div key={doc.id} className={`flex items-center gap-4 p-2 mb-2 rounded shadow ${darkTheme ? 'bg-gray-600' : 'bg-white'}`}>
                             <img src={`/profilePicture/${doc.profilePicture}`} alt="Doctor Profile" className="w-10 h-10 rounded-full object-cover" />
                             <div className="flex-grow">
-                                <p className="text-lg font-semibold">{doc.personalInfo.name}</p>
-                                <p className={`text-sm ${darkTheme ? 'text-gray-300' : 'text-gray-600'}`}>{doc.professionalInfo.speciality}</p>
+                                <p className="text-lg font-semibold">{doc.personal_info.fullName}</p>
+                                <p className={`text-sm ${darkTheme ? 'text-gray-300' : 'text-gray-600'}`}>{doc.professional_info.speciality}</p>
                             </div>
                             <button onClick={() => setSelectedDoctor(doc)} className="bg-blue-500 text-white px-4 py-2 rounded">Chat</button>
                         </div>
@@ -126,8 +126,8 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
                 <div className="flex items-center gap-4">
                     <img src={`/profilePicture/${selectedDoctor.profilePicture}`} alt="Doctor Profile" className="w-10 h-10 rounded-full object-cover" />
                     <div className="flex-grow">
-                        <p className="text-lg font-semibold">{selectedDoctor.personalInfo.name}</p>
-                        <p className="text-sm text-gray-500">{selectedDoctor.professionalInfo.speciality}</p>
+                        <p className="text-lg font-semibold">{selectedDoctor.personal_info.fullName}</p>
+                        <p className="text-sm text-gray-500">{selectedDoctor.professional_info.speciality}</p>
                     </div>
                 </div>
             </div>
