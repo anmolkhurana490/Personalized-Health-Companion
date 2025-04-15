@@ -9,9 +9,9 @@ const router = express.Router();
 // Book Appointment
 router.post('/book', async (req, res) => {
     try {
-        // console.log(doctorId, dateTime, reason, type)
         const userId = req.data._id;
         const { doctorId, dateTime, reason, type } = req.body;
+        // console.log(doctorId, dateTime, reason, type)
 
         // Create new appointment
         const appointment = new Appointment({ user: userId, doctor: doctorId, dateTime, reason, type });
@@ -35,7 +35,7 @@ router.post('/book', async (req, res) => {
 
         res.status(201).json({ success: true, message: "Appointment booked", appointment });
     } catch (err) {
-        // console.log(err)
+        console.log(err)
         res.status(500).json({ success: false, message: err.message });
     }
 });
@@ -45,11 +45,12 @@ router.get('/user', async (req, res) => {
     try {
         if (req.data.role !== 'user') return res.status(403).json({ success: false, message: "Unauthorized" });
 
-        const user = await User.find({ _id: req.data._id }).select('appointments').populate('appointments');
-        const appointments = user.appointments.sort({ dateTime: -1 });
+        const user = await User.findOne({ _id: req.data._id }).select('appointments').populate('appointments');
+        const appointments = user.appointments.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
 
         res.json({ success: true, appointments });
     } catch (err) {
+        console.log(err)
         res.status(500).json({ success: false, message: err.message });
     }
 });

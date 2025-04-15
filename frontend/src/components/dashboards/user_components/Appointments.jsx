@@ -14,9 +14,17 @@ const Appointments = () => {
 
     const [appointments, setAppointments] = useState([]);
 
-    useEffect(async () => {
-        const { data } = await axios.get(`${backendURL}/appointments/user`, { withCredentials: true });
-        setAppointments(data.appointments);
+    useEffect(() => {
+        const fetchAppointments = async () => {
+            try {
+                const { data } = await axios.get(`${backendURL}/dashboard/appointments/user`, { withCredentials: true });
+                setAppointments(data.appointments);
+            } catch (error) {
+                console.error("Error fetching appointments:", error);
+            }
+        };
+
+        fetchAppointments();
     }, []);
 
     const navigate = useNavigate();
