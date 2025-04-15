@@ -181,7 +181,7 @@ const doctorInfoFilter = (entry) => {
     return {
         id: entry._id,
         personal_info: entry.personal_info,
-        profressional_info: entry.professional_info,
+        professional_info: entry.professional_info,
         availability: entry.availability,
         biography: entry.optional.biography,
         profilePicture: entry.profilePicture
