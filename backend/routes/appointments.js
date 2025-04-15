@@ -177,12 +177,12 @@ router.get('/user/scheduled', async (req, res) => {
 
 const doctorInfoFilter = (entry) => {
     return {
-        id: entry.doctor._id,
-        personalInfo: entry.doctor.personalInfo,
-        profressionalInfo: entry.doctor.professionalInfo,
-        availability: entry.doctor.availability,
-        biography: entry.doctor.biography,
-        profilePicture: entry.doctor.profilePicture
+        id: entry._id,
+        personalInfo: entry.personalInfo,
+        profressionalInfo: entry.professionalInfo,
+        availability: entry.availability,
+        biography: entry.biography,
+        profilePicture: entry.profilePicture
     };
 }
 
