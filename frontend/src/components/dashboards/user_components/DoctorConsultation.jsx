@@ -187,12 +187,12 @@ const VideoCallDoctor = ({ darkTheme }) => {
                 const formattedTime = appointmentDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
                 return (
-                    <div key={appointment.id} className={`flex items-center gap-4 p-2 mb-2 rounded shadow ${darkTheme ? 'bg-gray-600' : 'bg-white'}`}>
+                    <div key={appointment._id} className={`flex items-center gap-4 p-2 mb-2 rounded shadow ${darkTheme ? 'bg-gray-600' : 'bg-white'}`}>
                         <img src="/profilePicture/1737561841070-anmol_photo.jpg" alt="Doctor Profile" className="w-10 h-10 rounded-full object-cover" />
 
                         <div className="flex-grow">
-                            <p className="text-lg font-semibold">{appointment.doctor.name}</p>
-                            <p className="text-sm text-gray-500">General Practitioner</p>
+                            <p className="text-lg font-semibold">{appointment.doctor.personal_info.fullName}</p>
+                            <p className="text-sm text-gray-500">{appointment.doctor.professional_info.speciality}</p>
                         </div>
 
                         {new Date() >= new Date(appointment.dateTime) ? (

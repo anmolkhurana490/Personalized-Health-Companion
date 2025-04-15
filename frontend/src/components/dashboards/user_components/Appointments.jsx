@@ -79,13 +79,13 @@ const Appointments = () => {
                             }`}
                     >
                         <div>
-                            <p><strong>Date:</strong> {appointment.date}</p>
-                            <p><strong>Doctor:</strong> {appointment.doctor}</p>
+                            <p><strong>Date:</strong> {new Date(appointment.dateTime).toLocaleDateString()} {appointment.date}</p>
+                            <p><strong>Doctor:</strong> {appointment.doctor.fullName}</p>
                         </div>
-                        {appointment.attended ? (
+                        {appointment.status === 'completed' ? (
                             <p><strong>Prescription:</strong> {appointment.prescription}</p>
                         ) : (
-                            appointment.available ? (
+                            appointment.status === 'scheduled' ? (
                                 <div className='flex gap-2'>
                                     <button onClick={() => joinChat(appointment.id, appointment.doctorId)}
                                         className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300"
@@ -100,7 +100,7 @@ const Appointments = () => {
                                     </button>
                                 </div>
                             ) : (
-                                <p className="text-red-500"><strong>Missed</strong></p>
+                                <p className="text-red-500 capitalize"><strong>{appointment.status}</strong></p>
                             )
                         )}
                     </div>

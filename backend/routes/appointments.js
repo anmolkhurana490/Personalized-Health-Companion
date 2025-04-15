@@ -27,10 +27,13 @@ router.post('/book', async (req, res) => {
             $push: { appointments: appointment._id },
         });
 
+        const health_info = await User.findOne({ _id: userId }).select('health_info');
+
         // add doctor to consulting doctors list in health record
-        await HealthRecord.findOneAndUpdate(
-            { _id: req.data.health_info },
-            { $addToSet: { consultingDoctors: { doctor: doctorId, consultationDate: new Date(dateTime), notes: reason } } }
+        const result = await HealthRecord.updateOne(
+            { _id: health_info.health_info, 'consultingDoctors.doctor': { $ne: doctorId } },
+            { $push: { consultingDoctors: { doctor: doctorId, consultationDate: new Date(dateTime), notes: reason } } },
+            { new: true }
         );
 
         res.status(201).json({ success: true, message: "Appointment booked", appointment });
@@ -45,8 +48,13 @@ router.get('/user', async (req, res) => {
     try {
         if (req.data.role !== 'user') return res.status(403).json({ success: false, message: "Unauthorized" });
 
-        const user = await User.findOne({ _id: req.data._id }).select('appointments').populate('appointments');
-        const appointments = user.appointments.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
+        const user = await User.findOne({ _id: req.data._id }).select('appointments').populate({
+            path: 'appointments',
+            populate: {
+                path: 'doctor'
+            },
+        });
+        const appointments = user.appointments.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime)).map((entry) => ({ ...entry._doc, doctor: { doctorId: entry.doctor._id, fullName: entry.doctor.personal_info.fullName } }));
 
         res.json({ success: true, appointments });
     } catch (err) {
@@ -154,8 +162,9 @@ router.get('/available-doctors', async (req, res) => {
 router.get('/consulted-doctors', async (req, res) => {
     try {
         const userId = req.data._id;
-        const healthRecord = await HealthRecord.findOne({ _id: req.data.health_info }).populate('consultingDoctors.doctor');
-        const consultedDoctors = healthRecord?.consultingDoctors.map((entry) => doctorInfoFilter(entry));
+        const health_info = await User.findOne({ _id: userId }).select('health_info');
+        const healthRecord = await HealthRecord.findOne({ _id: health_info.health_info }).populate('consultingDoctors.doctor');
+        const consultedDoctors = healthRecord?.consultingDoctors.map((entry) => doctorInfoFilter(entry.doctor));
 
         res.send({ status: 'success', consultedDoctors });
     } catch (err) {
@@ -168,10 +177,8 @@ router.get('/consulted-doctors', async (req, res) => {
 router.get('/user/scheduled', async (req, res) => {
     try {
         const userId = req.data._id;
-        let appointments = await Appointment.find({ user: userId, status: 'scheduled' }).populate('doctor');
-        appointments = appointments.map((entry) => ({
-            doctor: doctorInfoFilter(entry)
-        }));
+        let appointments = await Appointment.find({ user: userId, status: 'scheduled' }).populate('doctor', '_id personal_info.fullName professional_info.speciality');
+        appointments = appointments.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
 
         res.send({ success: true, appointments });
     } catch (err) {
