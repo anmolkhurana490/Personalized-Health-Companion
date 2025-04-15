@@ -177,12 +177,13 @@ router.get('/user/scheduled', async (req, res) => {
 });
 
 const doctorInfoFilter = (entry) => {
+    console.log(entry)
     return {
         id: entry._id,
-        personalInfo: entry.personalInfo,
-        profressionalInfo: entry.professionalInfo,
+        personal_info: entry.personal_info,
+        profressional_info: entry.professional_info,
         availability: entry.availability,
-        biography: entry.biography,
+        biography: entry.optional.biography,
         profilePicture: entry.profilePicture
     };
 }

@@ -222,6 +222,7 @@ const BookAppointment = ({ darkTheme }) => {
             try {
                 const response = await axios.get(`${backendURL}/dashboard/appointments/available-doctors`, { withCredentials: true });
                 setAvilableDoctors(response.data.doctors);
+                console.log(avilableDoctors);
             } catch (error) {
                 console.error('Error fetching available doctors:', error);
             }
