@@ -8,8 +8,7 @@ import axios from 'axios';
 import 'react-tabs/style/react-tabs.css';
 import '../../styles.css';
 
-// const backendURL = "https://personalized-health-companion-backend.vercel.app";
-const backendURL = "http://localhost:3000";
+const backendURL = "https://personalized-health-companion-backend.vercel.app";
 
 const DoctorConsultation = () => {
     const location = useLocation();
