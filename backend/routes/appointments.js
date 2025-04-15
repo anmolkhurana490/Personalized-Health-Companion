@@ -9,11 +9,12 @@ const router = express.Router();
 // Book Appointment
 router.post('/book', async (req, res) => {
     try {
+        // console.log(doctorId, dateTime, reason, type)
         const userId = req.data._id;
-        const { doctor, dateTime, reason, type } = req.body;
+        const { doctorId, dateTime, reason, type } = req.body;
 
         // Create new appointment
-        const appointment = new Appointment({ user: userId, doctor: doctor, dateTime, reason, type });
+        const appointment = new Appointment({ user: userId, doctor: doctorId, dateTime, reason, type });
         await appointment.save();
 
         // Update the user's appointments array
@@ -22,18 +23,19 @@ router.post('/book', async (req, res) => {
         });
 
         // Update the doctor's appointments array
-        await Doctor.findByIdAndUpdate(doctor, {
+        await Doctor.findByIdAndUpdate(doctorId, {
             $push: { appointments: appointment._id },
         });
 
         // add doctor to consulting doctors list in health record
         await HealthRecord.findOneAndUpdate(
             { _id: req.data.health_info },
-            { $addToSet: { consultingDoctors: { doctor: doctor, consultationDate: new Date(dateTime), notes: reason } } }
+            { $addToSet: { consultingDoctors: { doctor: doctorId, consultationDate: new Date(dateTime), notes: reason } } }
         );
 
         res.status(201).json({ success: true, message: "Appointment booked", appointment });
     } catch (err) {
+        // console.log(err)
         res.status(500).json({ success: false, message: err.message });
     }
 });

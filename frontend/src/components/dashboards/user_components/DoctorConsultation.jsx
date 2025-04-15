@@ -241,14 +241,9 @@ const BookAppointment = ({ darkTheme }) => {
             setError("");
 
             const dateTime = new Date(`${date}T${time}`).toISOString();
-            console.log({ doctorId, dateTime, type });
+            // console.log({ doctorId, dateTime, type });
 
-            await axios.post(`${backendURL}/dashboard/appointments/book`, {
-                doctorId: doctorId,
-                dateTime: dateTime,
-                type: type,
-                reason: reason,
-            }, { withCredentials: true });
+            await axios.post(`${backendURL}/dashboard/appointments/book`, { doctorId, dateTime, type, reason }, { withCredentials: true });
 
             alert("Appointment booked successfully!");
         }

@@ -21,9 +21,9 @@ app.use(cors({
     credentials: true
 }));
 
-app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // Apply authentication middleware
 // app.use(authMiddleware);
