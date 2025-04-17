@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { use, useContext, useEffect, useState } from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { AppContext } from '../../../AppProvider';
 import axios from 'axios';
@@ -13,19 +13,28 @@ const Appointments = () => {
     const [activeTab, setActiveTab] = React.useState('upcoming');
 
     const [appointments, setAppointments] = useState([]);
+    const [filteredAppointments, setFilteredAppointments] = useState([]);
 
     useEffect(() => {
         const fetchAppointments = async () => {
             const { data } = await axios.get(`${backendURL}/dashboard/appointments/doctor`, { withCredentials: true });
             setAppointments(data.appointments);
-            console.log(data)
+            console.log(data.appointments);
         };
         fetchAppointments();
     }, []);
 
-    const filteredAppointments = appointments?.filter(appointment =>
-        appointment.type === activeTab
-    );
+    useEffect(() => {
+        const filtered = appointments?.filter(appointment => {
+            if (activeTab === 'upcoming') {
+                return new Date(appointment.dateTime) > new Date();
+            } else if (activeTab === 'past') {
+                return new Date(appointment.dateTime) < new Date();
+            }
+            return false;
+        });
+        setFilteredAppointments(filtered);
+    }, [appointments, activeTab]);
 
     const options = ["upcoming", "past"];
 
@@ -66,11 +75,12 @@ const FilteredAppointments = ({ appointments, activeTab, darkTheme }) => {
         <div className="space-y-4">
             {appointments?.map(appointment => (
                 <div
-                    key={appointment.id}
+                    key={appointment._id}
                     className={`flex flex-wrap justify-between items-center gap-4 p-4 rounded shadow ${darkTheme ? "bg-gray-700 text-gray-100" : "bg-gray-100 text-gray-900"} md:grid-cols-2 lg:grid-cols-4`}
                 >
-                    <p><strong>Patient:</strong> {appointment.patient}</p>
-                    <p><strong>Date:</strong> {appointment.date}</p>
+                    <p><strong>Patient:</strong> {appointment.user.fullName}</p>
+                    <p><strong>Date:</strong> {new Date(appointment.dateTime).toLocaleDateString()}</p>
+                    <p><strong>Time:</strong> {new Date(appointment.dateTime).toLocaleTimeString()}</p>
 
                     {appointment.time && <p><strong>Time:</strong> {appointment.time}</p>}
                     {appointment.mode && <p><strong>Mode:</strong> {appointment.mode}</p>}

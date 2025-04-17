@@ -29,12 +29,12 @@ router.post('/book', async (req, res) => {
 
         const health_info = await User.findOne({ _id: userId }).select('health_info');
 
-        // add doctor to consulting doctors list in health record
-        const result = await HealthRecord.updateOne(
-            { _id: health_info.health_info, 'consultingDoctors.doctor': { $ne: doctorId } },
-            { $push: { consultingDoctors: { doctor: doctorId, consultationDate: new Date(dateTime), notes: reason } } },
-            { new: true }
-        );
+        // // add doctor to consulting doctors list in health record
+        // const result = await HealthRecord.updateOne(
+        //     { _id: health_info.health_info, 'consultingDoctors.doctor': { $ne: doctorId } },
+        //     { $push: { consultingDoctors: { doctor: doctorId, consultationDate: new Date(dateTime), notes: reason } } },
+        //     { new: true }
+        // );
 
         res.status(201).json({ success: true, message: "Appointment booked", appointment });
     } catch (err) {
@@ -167,11 +167,63 @@ router.get('/available-doctors', async (req, res) => {
 router.get('/consulted-doctors', async (req, res) => {
     try {
         const userId = req.data._id;
-        const health_info = await User.findOne({ _id: userId }).select('health_info');
-        const healthRecord = await HealthRecord.findOne({ _id: health_info.health_info }).populate('consultingDoctors.doctor');
-        const consultedDoctors = healthRecord?.consultingDoctors.map((entry) => doctorInfoFilter(entry.doctor));
+        if (req.data.role !== 'user') return res.status(403).json({ success: false, message: "Unauthorized" });
+
+        const appointments = await Appointment.find({ user: userId }).select('doctor dateTime prescription').populate('doctor');
+
+        const doctorMap = new Map();
+
+        appointments.forEach((entry) => {
+            const doctorId = entry.doctor._id.toString();
+
+            // If the doctor is not in the map or the current appointment is more recent, update the map
+            if (!doctorMap.has(doctorId) || new Date(entry.dateTime) > new Date(doctorMap.get(doctorId).dateTime)) {
+                doctorMap.set(doctorId, {
+                    dateTime: entry.dateTime,
+                    doctor: doctorInfoFilter(entry.doctor),
+                    prescription: entry.prescription
+                });
+            }
+        });
+
+        const consultedDoctors = Array.from(doctorMap.values()).sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
 
         res.send({ status: 'success', consultedDoctors });
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Get Consulted Doctors
+router.get('/consulted-patients', async (req, res) => {
+    try {
+        const doctorId = req.data._id;
+        if (req.data.role !== 'doctor') return res.status(403).json({ success: false, message: "Unauthorized" });
+
+        const appointments = await Appointment.find({ doctor: doctorId })
+            .select('user dateTime prescription')
+            .populate('user');
+
+        const patientMap = new Map();
+
+        for (const entry of appointments) {
+            const userId = entry.user._id.toString();
+
+            // If the doctor is not in the map or the current appointment is more recent, update the map
+            if (!patientMap.has(userId) || new Date(entry.dateTime) > new Date(patientMap.get(userId).dateTime)) {
+                const filteredUser = await userInfoFilter(entry.user);
+                patientMap.set(userId, {
+                    dateTime: entry.dateTime,
+                    user: filteredUser,
+                    prescription: entry.prescription
+                });
+            }
+        }
+
+        const consultedPatients = Array.from(patientMap.values()).sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
+
+        res.send({ status: 'success', consultedPatients });
     } catch (err) {
         console.log(err)
         res.status(500).json({ success: false, message: err.message });
@@ -182,6 +234,8 @@ router.get('/consulted-doctors', async (req, res) => {
 router.get('/user/scheduled', async (req, res) => {
     try {
         const userId = req.data._id;
+        if (req.data.role !== 'user') return res.status(403).json({ success: false, message: "Unauthorized" });
+
         let appointments = await Appointment.find({ user: userId, status: 'scheduled' }).populate('doctor', '_id personal_info.fullName professional_info.speciality');
         appointments = appointments.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
 
@@ -191,14 +245,37 @@ router.get('/user/scheduled', async (req, res) => {
     }
 });
 
+// Get Scheduled Appointments for Doctor
+router.get('/doctor/scheduled', async (req, res) => {
+    try {
+        const doctorId = req.data._id;
+        if (req.data.role !== 'doctor') return res.status(403).json({ success: false, message: "Unauthorized" });
+
+        let appointments = await Appointment.find({ doctor: doctorId, status: 'scheduled' }).populate('user', '_id personal_info.fullName professional_info.speciality');
+        appointments = appointments.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
+
+        res.send({ success: true, appointments });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 const doctorInfoFilter = (entry) => {
-    console.log(entry)
     return {
         id: entry._id,
         personal_info: entry.personal_info,
         professional_info: entry.professional_info,
         availability: entry.availability,
         biography: entry.optional.biography,
+        profilePicture: entry.profilePicture
+    };
+}
+
+const userInfoFilter = async (entry) => {
+    return {
+        id: entry._id,
+        personal_info: entry.personal_info,
+        health_info: await HealthRecord.findOne({ _id: entry.health_info }),
         profilePicture: entry.profilePicture
     };
 }

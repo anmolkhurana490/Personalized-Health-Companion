@@ -7,7 +7,16 @@ const appointmentSchema = new mongoose.Schema({
     type: { type: String, enum: ['video', 'chat'], default: 'video' },
     reason: { type: String },
     status: { type: String, enum: ['scheduled', 'ongoing', 'completed', 'cancelled'], default: 'scheduled' },
-    prescription: { type: String },
+    prescription: {
+        medicines: [
+            {
+                medicineName: { type: String },
+                dosage: { type: String },
+                duration: { type: String }
+            }
+        ],
+        instructions: { type: String }
+    },
     createdAt: { type: Date, default: Date.now },
 });
 
