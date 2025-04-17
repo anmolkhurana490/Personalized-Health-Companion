@@ -1,8 +1,25 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from "../../../AppProvider";
+import axios from 'axios';
+
+const backendURL = "https://personalized-health-companion-backend.vercel.app";
 
 const MedicalHistory = () => {
-    const { darkTheme } = useContext(AppContext);
+    const { darkTheme, profile } = useContext(AppContext);
+    const [consultedDoctors, setConsultedDoctors] = useState([]);
+
+    useEffect(() => {
+        const fetchConsultedDoctors = async () => {
+            try {
+                const response = await axios.get(`${backendURL}/dashboard/appointments/consulted-doctors`, { withCredentials: true });
+                setConsultedDoctors(response.data.consultedDoctors);
+            } catch (error) {
+                console.error('Error fetching consulted doctors:', error);
+            }
+        }
+
+        fetchConsultedDoctors();
+    }, []);
 
     return (
         <div className={`max-h-full overflow-auto custom-scrollbar p-4 rounded shadow ${darkTheme ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"}`}>
@@ -10,19 +27,25 @@ const MedicalHistory = () => {
             <p className="mb-4">Upload and view your medical reports or prescriptions here.</p>
 
             {/* div for Different Sections */}
-            <div className="grid grid-cols-2 max-md:grid-cols-1 gap-4 p-4">
+            <div className="grid grid-cols-2 max-md:grid-cols-1 gap-x-4 gap-y-8 p-4">
                 {/* 🔹 Doctors Consulted & Prescriptions */}
                 <div>
                     <div>
                         <h3 className="text-lg font-semibold mb-2">🩺 Doctors Consulted</h3>
                         <ul className="space-y-3">
-                            <li>👨‍⚕️ Dr. Amit Sharma (Cardiologist) - <button className={`underline ${darkTheme ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-500"}`}>View Prescription</button></li>
-                            <li>👩‍⚕️ Dr. Priya Verma (Dermatologist) - <button className={`underline ${darkTheme ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-500"}`}>View Prescription</button></li>
+                            {consultedDoctors.map((doctor) => (
+                                <li key={doctor.id}>
+                                    👨‍⚕️ {doctor.personal_info.fullName} ({doctor.professional_info.speciality}) -
+                                    <button className={`underline ${darkTheme ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-500"}`}>
+                                        View Prescription
+                                    </button>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 </div>
 
-                {/* 🔹 Medical Conditions (Past & Present Diseases) */}
+                {/* 🔹 Medical Conditions */}
                 <div>
                     <div>
                         <h3 className="text-lg font-semibold mb-2">📋 Medical Conditions</h3>

@@ -12,7 +12,7 @@ const backendURL = "https://personalized-health-companion-backend.vercel.app";
 
 const DoctorConsultation = () => {
     const location = useLocation();
-    const { appointmentId, doctorId } = location.state || {};
+    const { id: appointmentId, doctorId } = location.state || {};
     const { darkTheme } = useContext(AppContext);
     const [activeTab, setActiveTab] = useState("doctor-chat");
 
@@ -73,7 +73,7 @@ const ChatWithDoctor = ({ darkTheme, preSelectedDoctorId, appointmentId }) => {
             const doctor = consultedDoctors.find((doc) => doc.id === preSelectedDoctorId);
             if (doctor) setSelectedDoctor(doctor);
         }
-    }, [preSelectedDoctorId]);
+    }, [preSelectedDoctorId, consultedDoctors]);
 
     const onBack = () => setSelectedDoctor(null);
 

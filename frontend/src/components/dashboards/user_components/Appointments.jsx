@@ -74,7 +74,7 @@ const Appointments = () => {
             <div className={`mt-4 gap-4 ${view === 'list' ? 'flex flex-col' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
                 {appointments.map((appointment) => (
                     <div
-                        key={appointment.id}
+                        key={appointment._id}
                         className={`w-full flex flex-wrap gap-2 justify-between items-center p-4 border rounded transition duration-300 ${darkTheme ? 'border-gray-700 hover:shadow-gray-700' : 'border-gray-300 hover:shadow-lg'
                             }`}
                     >
@@ -87,7 +87,7 @@ const Appointments = () => {
                         ) : (
                             appointment.status === 'scheduled' ? (
                                 <div className='flex gap-2'>
-                                    <button onClick={() => joinChat(appointment.id, appointment.doctorId)}
+                                    <button onClick={() => joinChat(appointment._id, appointment.doctor.doctorId)}
                                         className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300"
                                     >
                                         Chat
