@@ -68,8 +68,13 @@ router.get('/doctor', async (req, res) => {
     try {
         if (req.data.role !== 'doctor') return res.status(403).json({ success: false, message: "Unauthorized" });
 
-        const doctor = await Doctor.find({ _id: req.data._id }).select('appointments').populate('appointments');
-        const appointments = doctor.appointments.sort({ dateTime: -1 });
+        const doctor = await Doctor.findOne({ _id: req.data._id }).select('appointments').populate({
+            path: 'appointments',
+            populate: {
+                path: 'user'
+            },
+        });
+        const appointments = doctor.appointments.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime)).map((entry) => ({ ...entry._doc, user: { userId: entry.user._id, fullName: entry.user.personal_info.fullName } }));
 
         res.json({ success: true, appointments });
     } catch (err) {

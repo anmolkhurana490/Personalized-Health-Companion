@@ -6,18 +6,24 @@ import axios from 'axios';
 import 'react-tabs/style/react-tabs.css';
 import '../../styles.css';
 
+const backendURL = "https://personalized-health-companion-backend.vercel.app";
+
 const Appointments = () => {
     const { darkTheme } = useContext(AppContext);
     const [activeTab, setActiveTab] = React.useState('upcoming');
 
     const [appointments, setAppointments] = useState([]);
 
-    useEffect(async () => {
-        const { data } = await axios.get(`${backendURL}/appointments/doctor`, { withCredentials: true });
-        setAppointments(data.appointments);
+    useEffect(() => {
+        const fetchAppointments = async () => {
+            const { data } = await axios.get(`${backendURL}/dashboard/appointments/doctor`, { withCredentials: true });
+            setAppointments(data.appointments);
+            console.log(data)
+        };
+        fetchAppointments();
     }, []);
 
-    const filteredAppointments = appointments.filter(appointment =>
+    const filteredAppointments = appointments?.filter(appointment =>
         appointment.type === activeTab
     );
 
@@ -52,13 +58,13 @@ const Appointments = () => {
 };
 
 const FilteredAppointments = ({ appointments, activeTab, darkTheme }) => {
-    if (appointments.length === 0) {
+    if (appointments?.length === 0) {
         return <p>No appointments available.</p>;
     }
 
     return (
         <div className="space-y-4">
-            {appointments.map(appointment => (
+            {appointments?.map(appointment => (
                 <div
                     key={appointment.id}
                     className={`flex flex-wrap justify-between items-center gap-4 p-4 rounded shadow ${darkTheme ? "bg-gray-700 text-gray-100" : "bg-gray-100 text-gray-900"} md:grid-cols-2 lg:grid-cols-4`}
@@ -85,7 +91,7 @@ const FilteredAppointments = ({ appointments, activeTab, darkTheme }) => {
                     </div>
                 </div>
             ))}
-            {!appointments.length && <p>No appointments available.</p>}
+            {!appointments?.length && <p>No appointments available.</p>}
         </div>
     );
 };
