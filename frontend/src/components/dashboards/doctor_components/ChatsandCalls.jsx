@@ -1,16 +1,28 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { IoArrowBackOutline } from "react-icons/io5";
 import { AppContext } from '../../../AppProvider';
+import axios from 'axios';
+
+const backendURL = "https://personalized-health-companion-backend.vercel.app";
 
 const ChatsAndCalls = () => {
     const { darkTheme } = useContext(AppContext);
     const [selectedPatient, setSelectedPatient] = useState(null);
+    const [patients, setPatients] = useState([])
 
-    const patients = [
-        { id: 1, name: "John Doe", lastChat: "2 hours ago", avatar: "https://via.placeholder.com/40" },
-        { id: 2, name: "Jane Smith", lastChat: "1 day ago", avatar: "https://via.placeholder.com/40" },
-        { id: 3, name: "Alice Johnson", lastChat: "3 days ago", avatar: "https://via.placeholder.com/40" },
-    ];
+    // const patients = [
+    //     { id: 1, name: "John Doe", lastChat: "2 hours ago", avatar: "https://via.placeholder.com/40" },
+    //     { id: 2, name: "Jane Smith", lastChat: "1 day ago", avatar: "https://via.placeholder.com/40" },
+    //     { id: 3, name: "Alice Johnson", lastChat: "3 days ago", avatar: "https://via.placeholder.com/40" },
+    // ];
+
+    useEffect(() => {
+        const fetchPatients = async () => {
+            const { data } = await axios.get(`${backendURL}/dashboard/appointments/consulted-patients`, { withCredentials: true });
+            setPatients(data.consultedPatients);
+        }
+        fetchPatients();
+    }, [])
 
     return (
         <div className={`h-screen flex flex-col ${darkTheme ? "bg-gray-800 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
@@ -33,18 +45,18 @@ const PatientList = ({ patients, setSelectedPatient, darkTheme }) => {
                 <ul className="space-y-4">
                     {patients.map((patient) => (
                         <li
-                            key={patient.id}
+                            key={patient.user.id}
                             className={`flex items-center justify-between p-4 rounded shadow ${darkTheme ? "bg-gray-700 text-gray-100" : "bg-white text-gray-900"}`}
                         >
                             <div className="flex items-center">
                                 <img
-                                    src={patient.avatar}
-                                    alt={patient.name}
+                                    src={`/profilePicture/${patient.user.profilePicture}`}
+                                    alt={patient.user.personal_info.fullName}
                                     className="w-10 h-10 rounded-full mr-3"
                                 />
                                 <div>
-                                    <p className="font-medium">{patient.name}</p>
-                                    <p className="text-sm text-gray-500">Last chat: {patient.lastChat}</p>
+                                    <p className="font-medium">{patient.user.personal_info.fullName}</p>
+                                    <p className="text-sm text-gray-500">Last chat: {new Date(patient.dateTime).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
                                 </div>
                             </div>
                             <div className="space-x-2">
@@ -81,11 +93,11 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
                         <IoArrowBackOutline />
                     </button>
                     <img
-                        src={patient.avatar}
-                        alt={patient.name}
+                        src={`/profilePicture/${patient.user.profilePicture}`}
+                        alt={patient.user.personal_info.fullName}
                         className="w-10 h-10 rounded-full"
                     />
-                    <h2 className="text-lg font-semibold">Chat with {patient.name}</h2>
+                    <h2 className="text-lg font-semibold">Chat with {patient.user.personal_info.fullName}</h2>
                 </div>
                 <button
                     className={`px-4 py-2 rounded shadow ${darkTheme ? "bg-blue-500 text-white" : "bg-blue-500 text-white"} hover:bg-blue-600`}

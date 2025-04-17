@@ -19,7 +19,6 @@ const Appointments = () => {
         const fetchAppointments = async () => {
             const { data } = await axios.get(`${backendURL}/dashboard/appointments/doctor`, { withCredentials: true });
             setAppointments(data.appointments);
-            console.log(data.appointments);
         };
         fetchAppointments();
     }, []);
@@ -83,10 +82,9 @@ const FilteredAppointments = ({ appointments, activeTab, darkTheme }) => {
                     <p><strong>Time:</strong> {new Date(appointment.dateTime).toLocaleTimeString()}</p>
 
                     {appointment.time && <p><strong>Time:</strong> {appointment.time}</p>}
-                    {appointment.mode && <p><strong>Mode:</strong> {appointment.mode}</p>}
-                    {appointment.prescription && <p><strong>Prescription:</strong> {appointment.prescription}</p>}
+                    {appointment.type && <p><strong>Mode:</strong> {appointment.type}</p>}
 
-                    <div className="mt-2 flex flex-wrap gap-2">
+                    <div className="mt-2 flex flex-wrap gap-2 items-center">
                         {activeTab === 'upcoming' && (
                             <>
                                 <button className={`px-4 py-2 rounded ${darkTheme ? "bg-blue-500 text-white" : "bg-blue-500 text-white"} hover:bg-blue-600`}>Join Call</button>
@@ -96,13 +94,17 @@ const FilteredAppointments = ({ appointments, activeTab, darkTheme }) => {
                             </>
                         )}
                         {activeTab === 'past' && (
-                            <button className={`px-4 py-2 rounded ${darkTheme ? "bg-gray-600 text-gray-100" : "bg-gray-300 text-gray-900"} hover:bg-gray-400`}>View Details</button>
+                            <>
+                                {appointment.prescription && <button className={`px-4 py-2 rounded ${darkTheme ? "bg-green-600 text-gray-100" : "bg-green-300 text-gray-900"} hover:bg-gray-400`}>Prescription</button>}
+                                <button className={`px-4 py-2 rounded ${darkTheme ? "bg-gray-600 text-gray-100" : "bg-gray-300 text-gray-900"} hover:bg-gray-400`}>View Details</button>
+                            </>
                         )}
                     </div>
                 </div>
-            ))}
+            ))
+            }
             {!appointments?.length && <p>No appointments available.</p>}
-        </div>
+        </div >
     );
 };
 

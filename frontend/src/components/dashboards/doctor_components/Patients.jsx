@@ -1,106 +1,30 @@
-import React, { useContext } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../AppProvider";
+import axios from "axios";
+
+const backendURL = "https://personalized-health-companion-backend.vercel.app";
 
 const Patients = ({ profile }) => {
     const { darkTheme } = useContext(AppContext);
-    const [patients, setPatients] = React.useState([
-        {
-            id: 1,
-            name: "John Doe",
-            age: 45,
-            gender: "Male",
-            medicalHistory: "Diabetes, Hypertension",
-            lastConsultation: "2023-10-01",
-            emergency: false,
-        },
-        {
-            id: 2,
-            name: "Jane Smith",
-            age: 32,
-            gender: "Female",
-            medicalHistory: "Asthma",
-            lastConsultation: "2023-09-25",
-            emergency: true,
-        },
-        {
-            id: 3,
-            name: "Alice Johnson",
-            age: 29,
-            gender: "Female",
-            medicalHistory: "None",
-            lastConsultation: "2023-09-15",
-            emergency: false,
-        },
-        {
-            id: 4,
-            name: "Robert Brown",
-            age: 50,
-            gender: "Male",
-            medicalHistory: "Heart Disease",
-            lastConsultation: "2023-09-20",
-            emergency: true,
-        },
-        {
-            id: 5,
-            name: "Emily Davis",
-            age: 40,
-            gender: "Female",
-            medicalHistory: "Arthritis",
-            lastConsultation: "2023-09-30",
-            emergency: false,
-        },
-        {
-            id: 6,
-            name: "Michael Wilson",
-            age: 37,
-            gender: "Male",
-            medicalHistory: "High Cholesterol",
-            lastConsultation: "2023-09-28",
-            emergency: false,
-        },
-        {
-            id: 7,
-            name: "Sophia Martinez",
-            age: 25,
-            gender: "Female",
-            medicalHistory: "Anemia",
-            lastConsultation: "2023-09-18",
-            emergency: false,
-        },
-        {
-            id: 8,
-            name: "James Anderson",
-            age: 60,
-            gender: "Male",
-            medicalHistory: "Parkinson's Disease",
-            lastConsultation: "2023-09-10",
-            emergency: true,
-        },
-        {
-            id: 9,
-            name: "Olivia Thomas",
-            age: 34,
-            gender: "Female",
-            medicalHistory: "Thyroid Issues",
-            lastConsultation: "2023-09-22",
-            emergency: false,
-        },
-        {
-            id: 10,
-            name: "William Garcia",
-            age: 48,
-            gender: "Male",
-            medicalHistory: "Kidney Stones",
-            lastConsultation: "2023-09-12",
-            emergency: false,
-        },
-    ]);
+    const [patients, setPatients] = useState([]);
+    const [filteredPatients, setFilteredPatients] = useState([]);
+
+    useEffect(() => {
+        const fetchPatients = async () => {
+            const { data } = await axios.get(`${backendURL}/dashboard/appointments/consulted-patients`, { withCredentials: true });
+            setPatients(data.consultedPatients);
+        }
+        fetchPatients();
+    }, []);
 
     const [searchTerm, setSearchTerm] = React.useState("");
 
-    const filteredPatients = patients.filter((patient) =>
-        patient.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+
+    useEffect(() => {
+        setFilteredPatients(patients.filter((patient) =>
+            patient.user.personal_info.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+        ));
+    }, [searchTerm, patients]);
 
     return (
         <div
@@ -111,8 +35,8 @@ const Patients = ({ profile }) => {
                 type="text"
                 placeholder="Search by name..."
                 className={`border p-3 rounded-lg mb-6 w-full focus:outline-none focus:ring-2 ${darkTheme
-                        ? "border-gray-600 bg-gray-700 text-gray-100 focus:ring-blue-400"
-                        : "border-gray-300 bg-white text-gray-900 focus:ring-blue-400"
+                    ? "border-gray-600 bg-gray-700 text-gray-100 focus:ring-blue-400"
+                    : "border-gray-300 bg-white text-gray-900 focus:ring-blue-400"
                     }`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -132,25 +56,18 @@ const Patients = ({ profile }) => {
                     </thead>
                     <tbody>
                         {filteredPatients
-                            .sort((a, b) => new Date(b.lastConsultation) - new Date(a.lastConsultation))
                             .map((patient) => (
                                 <tr
-                                    key={patient.id}
-                                    className={`border-b ${patient.emergency
-                                            ? darkTheme
-                                                ? "bg-red-900"
-                                                : "bg-red-100"
-                                            : darkTheme
-                                                ? "hover:bg-gray-700"
-                                                : "hover:bg-gray-100"
-                                        }`}
+                                    key={patient.user.id}
+                                    className={`border-b ${darkTheme ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}
                                 >
-                                    <td className="p-3">{patient.name}</td>
-                                    <td className="p-3">{patient.age}</td>
-                                    <td className="p-3">{patient.gender}</td>
-                                    <td className="p-3">{patient.medicalHistory}</td>
-                                    <td className="p-3">{patient.lastConsultation}</td>
-                                    <td className="p-3 space-x-2">
+                                    <td className="p-3">{patient.user.personal_info.fullName}</td>
+                                    <td className="p-3">{new Date().getFullYear() - new Date(patient.user.personal_info.dateOfBirth).getFullYear()}</td>
+                                    <td className="p-3">{patient.user.personal_info.gender}</td>
+                                    <td className="p-3">{patient.user.health_info.medicalHistory.join(", ")}</td>
+                                    <td className="p-3">{new Date(patient.dateTime).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</td>
+
+                                    <td className="p-3 space-x-4">
                                         <button
                                             className={`hover:underline ${darkTheme ? "text-blue-400" : "text-blue-500"
                                                 }`}
