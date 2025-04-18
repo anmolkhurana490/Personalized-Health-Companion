@@ -85,9 +85,11 @@ router.get('/doctor', async (req, res) => {
 // Start Appointment
 router.put('/start', async (req, res) => {
     try {
-        if (req.data.role !== 'doctor' || req.data._id !== req.body.doctor) return res.status(403).json({ success: false, message: "Unauthorized" });
+        const { id } = req.query;
+        const appointment = await Appointment.findById(id);
 
-        const { id } = req.body;
+        if (req.data.role !== 'doctor' || req.data._id !== appointment?.doctor.toString()) return res.status(403).json({ success: false, message: "Unauthorized" });
+
         await Appointment.findByIdAndUpdate(id, { status: 'ongoing' });
 
         res.json({ success: true, message: "Appointment started" });
@@ -99,10 +101,13 @@ router.put('/start', async (req, res) => {
 // Complete Appointment
 router.put('/complete', async (req, res) => {
     try {
-        if (req.data.role !== 'doctor' || req.data._id !== req.body.doctor) return res.status(403).json({ success: false, message: "Unauthorized" });
+        const { id } = req.query;
+        const appointment = await Appointment.findById(id);
 
-        const { id } = req.body;
-        await Appointment.findByIdAndUpdate(id, { status: 'completed', prescription: req.body.prescription });
+        if (req.data.role !== 'doctor' || req.data._id !== appointment?.doctor.toString()) return res.status(403).json({ success: false, message: "Unauthorized" });
+
+        // await Appointment.findByIdAndUpdate(id, { status: 'completed', prescription: req.body.prescription });
+        await Appointment.findByIdAndUpdate(id, { status: 'completed' });
 
         res.json({ success: true, message: "Appointment completed" });
     } catch (err) {
@@ -113,9 +118,11 @@ router.put('/complete', async (req, res) => {
 // Cancel Appointment
 router.put('/cancel', async (req, res) => {
     try {
-        if (req.data.role !== 'doctor' || req.data._id !== req.body.doctor) return res.status(403).json({ success: false, message: "Unauthorized" });
+        const { id } = req.query;
+        const appointment = await Appointment.findById(id);
 
-        const { id } = req.body;
+        if (req.data.role !== 'doctor' || req.data._id !== appointment?.doctor.toString()) return res.status(403).json({ success: false, message: "Unauthorized" });
+
         await Appointment.findByIdAndUpdate(id, { status: 'cancelled' });
 
         res.json({ success: true, message: "Appointment cancelled" });

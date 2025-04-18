@@ -35,6 +35,15 @@ const Appointments = () => {
         setFilteredAppointments(filtered);
     }, [appointments, activeTab]);
 
+    const cancelAppointment = async (appointmentId) => {
+        try {
+            await axios.put(`${backendURL}/dashboard/appointments/cancel?id=${appointmentId}`, { withCredentials: true });
+            setAppointments(appointments.filter(appointment => appointment._id !== appointmentId));
+        } catch (error) {
+            console.error("Error cancelling appointment:", error);
+        }
+    };
+
     const options = ["upcoming", "past"];
 
     return (
@@ -57,7 +66,7 @@ const Appointments = () => {
 
                 {options.map((option, index) => (
                     <TabPanel key={index}>
-                        <FilteredAppointments appointments={filteredAppointments} activeTab={option} darkTheme={darkTheme} />
+                        <FilteredAppointments appointments={filteredAppointments} activeTab={option} darkTheme={darkTheme} cancelAppointment={cancelAppointment} />
                     </TabPanel>
                 ))}
             </Tabs>
@@ -65,7 +74,7 @@ const Appointments = () => {
     );
 };
 
-const FilteredAppointments = ({ appointments, activeTab, darkTheme }) => {
+const FilteredAppointments = ({ appointments, activeTab, darkTheme, cancelAppointment }) => {
     if (appointments?.length === 0) {
         return <p>No appointments available.</p>;
     }
@@ -81,8 +90,8 @@ const FilteredAppointments = ({ appointments, activeTab, darkTheme }) => {
                     <p><strong>Date:</strong> {new Date(appointment.dateTime).toLocaleDateString()}</p>
                     <p><strong>Time:</strong> {new Date(appointment.dateTime).toLocaleTimeString()}</p>
 
-                    {appointment.time && <p><strong>Time:</strong> {appointment.time}</p>}
                     {appointment.type && <p><strong>Mode:</strong> {appointment.type}</p>}
+                    {appointment.reason && <p><strong>Reason:</strong> {appointment.reason}</p>}
 
                     <div className="mt-2 flex flex-wrap gap-2 items-center">
                         {activeTab === 'upcoming' && (
@@ -90,7 +99,7 @@ const FilteredAppointments = ({ appointments, activeTab, darkTheme }) => {
                                 <button className={`px-4 py-2 rounded ${darkTheme ? "bg-blue-500 text-white" : "bg-blue-500 text-white"} hover:bg-blue-600`}>Join Call</button>
                                 <button className={`px-4 py-2 rounded ${darkTheme ? "bg-green-500 text-white" : "bg-green-500 text-white"} hover:bg-green-600`}>Chat</button>
                                 <button className={`px-4 py-2 rounded ${darkTheme ? "bg-gray-600 text-gray-100" : "bg-gray-300 text-gray-900"} hover:bg-gray-400`}>View Profile</button>
-                                <button className={`px-4 py-2 rounded ${darkTheme ? "bg-red-600 text-gray-100" : "bg-red-300 text-gray-900"} hover:bg-red-400`}>Cancel</button>
+                                <button onClick={() => cancelAppointment(appointment._id)} className={`px-4 py-2 rounded ${darkTheme ? "bg-red-600 text-gray-100" : "bg-red-300 text-gray-900"} hover:bg-red-400`}>Cancel</button>
                             </>
                         )}
                         {activeTab === 'past' && (
