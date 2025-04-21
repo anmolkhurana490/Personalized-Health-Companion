@@ -82,6 +82,26 @@ router.get('/doctor', async (req, res) => {
     }
 });
 
+// Get Appointment by ID
+router.get('/appointment', async (req, res) => {
+    try {
+        const { id } = req.query;
+        if (!id) return res.status(400).json({ success: false, message: "Appointment ID is required" });
+
+        let appointment = await Appointment.findById(id).populate('user doctor');
+        if (!appointment) return res.status(404).json({ success: false, message: "Appointment not found" });
+
+        appointment = appointment.toObject();
+        appointment.doctor = doctorInfoFilter(appointment.doctor);
+        appointment.user = await userInfoFilter(appointment.user);
+
+        res.json({ success: true, appointment });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // Start Appointment
 router.put('/start', async (req, res) => {
     try {
