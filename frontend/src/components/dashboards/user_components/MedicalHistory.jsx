@@ -34,8 +34,8 @@ const MedicalHistory = () => {
                         <h3 className="text-lg font-semibold mb-2">🩺 Doctors Consulted</h3>
                         <ul className="space-y-3">
                             {consultedDoctors.map((doctor) => (
-                                <li key={doctor.id}>
-                                    👨‍⚕️ {doctor.personal_info.fullName} ({doctor.professional_info.speciality}) -
+                                <li key={doctor.doctor.id}>
+                                    👨‍⚕️ {doctor.doctor.personal_info.fullName} ({doctor.doctor.professional_info.speciality}) -
                                     <button className={`underline ${darkTheme ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-500"}`}>
                                         View Prescription
                                     </button>

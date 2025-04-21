@@ -85,13 +85,13 @@ const ChatWithDoctor = ({ darkTheme, preSelectedDoctorId, appointmentId }) => {
                 <>
                     <p className=''>Please select a doctor to start chatting.</p>
                     {consultedDoctors?.map((doc) => (
-                        <div key={doc.id} className={`flex items-center gap-4 p-2 mb-2 rounded shadow ${darkTheme ? 'bg-gray-600' : 'bg-white'}`}>
-                            <img src={`/profilePicture/${doc.profilePicture}`} alt="Doctor Profile" className="w-10 h-10 rounded-full object-cover" />
+                        <div key={doc.doctor.id} className={`flex items-center gap-4 p-2 mb-2 rounded shadow ${darkTheme ? 'bg-gray-600' : 'bg-white'}`}>
+                            <img src={`/profilePicture/${doc.doctor.profilePicture}`} alt="Doctor Profile" className="w-10 h-10 rounded-full object-cover" />
                             <div className="flex-grow">
-                                <p className="text-lg font-semibold">{doc.personal_info.fullName}</p>
-                                <p className={`text-sm ${darkTheme ? 'text-gray-300' : 'text-gray-600'}`}>{doc.professional_info.speciality}</p>
+                                <p className="text-lg font-semibold">{doc.doctor.personal_info.fullName}</p>
+                                <p className={`text-sm ${darkTheme ? 'text-gray-300' : 'text-gray-600'}`}>{doc.doctor.professional_info.speciality}</p>
                             </div>
-                            <button onClick={() => setSelectedDoctor(doc)} className="bg-blue-500 text-white px-4 py-2 rounded">Chat</button>
+                            <button onClick={() => setSelectedDoctor(doc.doctor)} className="bg-blue-500 text-white px-4 py-2 rounded">Chat</button>
                         </div>
                     ))}
                 </>
