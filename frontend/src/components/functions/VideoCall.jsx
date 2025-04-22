@@ -6,8 +6,8 @@ import axios from 'axios';
 
 import { AppContext } from "../../AppProvider";
 
-const backendURL = "https://personalized-health-companion-backend.vercel.app";
-// const backendURL = "http://localhost:3000";
+// const backendURL = "https://personalized-health-companion-backend.vercel.app";
+const backendURL = "http://localhost:3000";
 
 const VideoCall = () => {
     const { profile } = useContext(AppContext);
@@ -129,6 +129,9 @@ const VideoCall = () => {
         });
         socketRef.current.on('disconnect', () => {
             console.log('Disconnected from the server');
+        });
+        socketRef.current.on('connect_error', (error) => {
+            console.error('Connection error:', error);
         });
 
         socketRef.current.on('offer', handleOffer);
