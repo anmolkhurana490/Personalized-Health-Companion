@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { IoArrowBackOutline } from "react-icons/io5";
 import { useLocation } from 'react-router-dom';
@@ -108,6 +108,8 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
         { sender: "doctor", text: "Hello, how can I assist you today?" },
         { sender: "user", text: "I have been experiencing headaches lately." },
     ]);
+
+    const socketRef = useRef(null);
     const { profile } = useContext(AppContext);
     const [remoteId, setRemoteId] = useState(null);
     const [chatId, setChatId] = useState(null);
@@ -124,32 +126,32 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
     }
 
     useEffect(() => {
-        const socket = io(backendURL, {
+        socketRef.current = io(backendURL, {
             path: '/chat',
             withCredentials: true,
         });
 
         if (selectedDoctor) {
-            socket.emit('join-user', { user: profile._id, remote: selectedDoctor.id });
+            socketRef.current.emit('join-user', { user: profile._id, remote: selectedDoctor.id });
             fetchMessages();
         }
 
-        socket.on('user-joined', (user) => {
+        socketRef.current.on('user-joined', (user) => {
             setRemoteId(user.id);
         });
 
-        socket.on('receive-message', ({ from, message }) => {
+        socketRef.current.on('receive-message', ({ from, message }) => {
             if (remoteId === from) setMessages((prev) => [...prev, { sender: 'doctor', text: message }]);
         });
 
         return () => {
-            socket.disconnect();
+            socketRef.current.disconnect();
         };
     }, [selectedDoctor]);
 
     const sendMessage = async () => {
         if (input.trim()) {
-            socket.emit('send-message', { from: socket.id, to: remoteId, message: input });
+            socketRef.current.emit('send-message', { from: socketRef.current.id, to: remoteId, message: input });
 
             await axios.post(`${backendURL}/dashboard/chats/`, { chatId, message: input }, { withCredentials: true });
 

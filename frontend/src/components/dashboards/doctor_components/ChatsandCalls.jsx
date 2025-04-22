@@ -1,7 +1,8 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { IoArrowBackOutline } from "react-icons/io5";
 import { AppContext } from '../../../AppProvider';
 import axios from 'axios';
+import { io } from 'socket.io-client';
 
 const backendURL = "https://personalized-health-companion-backend.vercel.app";
 
@@ -86,6 +87,8 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
         { sender: "doctor", text: "Hello, how can I assist you today?" },
         { sender: "user", text: "I have been experiencing headaches lately." },
     ]);
+
+    const socketRef = useRef(null);
     const { profile } = useContext(AppContext);
     const [remoteId, setRemoteId] = useState(null);
     const [chatId, setChatId] = useState(null);
@@ -94,7 +97,7 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
 
     const fetchMessages = async () => {
         const savedMessages = await axios.get(`${backendURL}/dashboard/chats/`, {
-            params: { doctor: profile._id, user: patient.id },
+            params: { doctor: profile._id, user: patient.user.id },
             withCredentials: true
         });
         setMessages(savedMessages.data.chats.messages);
@@ -102,37 +105,42 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
     }
 
     useEffect(() => {
-        const socket = io(backendURL, {
-            path: '/chat',
-            withCredentials: true,
-        });
+        //     socketRef.current = io(backendURL, {
+        //         path: '/chat',
+        //         withCredentials: true,
+        //     });
 
-        if (selectedDoctor) {
-            socket.emit('join-user', { user: profile._id, remote: patient.id });
+        if (patient) {
+            // socketRef.current.emit('join-user', { user: profile._id, remote: patient.user.id });
             fetchMessages();
         }
 
-        socket.on('user-joined', (user) => {
-            setRemoteId(user.id);
-        });
+        //     socketRef.current.on('user-joined', (user) => {
+        //         setRemoteId(user.id);
+        //     });
 
-        socket.on('receive-message', ({ from, message }) => {
-            if (remoteId === from) setMessages((prev) => [...prev, { sender: 'user', text: message }]);
-        });
+        //     socketRef.current.on('receive-message', ({ from, message }) => {
+        //         if (remoteId === from) setMessages((prev) => [...prev, { sender: 'user', text: message }]);
+        //     });
 
-        return () => {
-            socket.disconnect();
-        };
+        //     return () => {
+        //         socketRef.current.disconnect();
+        //     };
     }, [patient]);
 
     const sendMessage = async () => {
-        if (input.trim()) {
-            socket.emit('send-message', { from: socket.id, to: remoteId, message: input });
+        try {
+            if (input.trim()) {
+                // socketRef.current.emit('send-message', { from: socketRef.current.id, to: remoteId, message: input });
 
-            await axios.post(`${backendURL}/dashboard/chats/`, { chatId, message: input }, { withCredentials: true });
+                await axios.post(`${backendURL}/dashboard/chats/`, { chatId, message: input }, { withCredentials: true });
 
-            setMessages((prev) => [...prev, { sender: "doctor", text: input }]);
-            setInput("");
+                setMessages((prev) => [...prev, { sender: "doctor", text: input }]);
+                setInput("");
+            }
+        }
+        catch (error) {
+            console.error(error);
         }
     };
 
@@ -160,22 +168,39 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
                 </button>
             </div>
             <div className={`flex-1 p-4 overflow-y-auto ${darkTheme ? "bg-gray-800 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
-                <div className="mb-4">
-                    <p className={`p-2 rounded w-max ${darkTheme ? "bg-blue-600 text-white" : "bg-blue-100 text-gray-900"}`}>Hello, how can I help you?</p>
-                    <p className="text-sm text-gray-500 mt-1">10:00 AM</p>
-                </div>
-                <div className="mb-4 text-right">
-                    <p className={`p-2 rounded w-max ml-auto ${darkTheme ? "bg-green-600 text-white" : "bg-green-100 text-gray-900"}`}>I need a prescription for my headache.</p>
-                    <p className="text-sm text-gray-500 mt-1">10:05 AM</p>
-                </div>
+                {messages.map((message, index) => (
+                    <div
+                        key={index}
+                        className={`mb-4 ${message.sender === "doctor" ? "text-right" : "text-left"}`}
+                    >
+                        <p
+                            className={`p-2 rounded w-max ${message.sender === "doctor"
+                                ? darkTheme
+                                    ? "bg-green-600 text-white ml-auto"
+                                    : "bg-green-100 text-gray-900 ml-auto"
+                                : darkTheme
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-blue-100 text-gray-900"
+                                }`}
+                        >
+                            {message.text}
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                    </div>
+                ))}
             </div>
             <div className={`p-4 border-t flex items-center ${darkTheme ? "bg-gray-700 text-gray-100" : "bg-white text-gray-900"}`}>
                 <input
                     type="text"
                     placeholder="Type a message..."
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
                     className={`flex-1 border rounded p-2 mr-2 ${darkTheme ? "bg-gray-600 text-gray-100" : "bg-gray-200 text-gray-900"}`}
                 />
                 <button
+                    onClick={sendMessage}
                     className={`px-4 py-2 rounded shadow ${darkTheme ? "bg-blue-500 text-white" : "bg-blue-500 text-white"} hover:bg-blue-600`}
                 >
                     Send
