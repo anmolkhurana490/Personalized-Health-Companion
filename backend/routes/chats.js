@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
             }
         });
 
-        if (chats) res.status(200).json({ success: true, chats });
+        if (chats) return res.status(200).json({ success: true, chats });
 
         const newChat = new Chat({
             participants: [

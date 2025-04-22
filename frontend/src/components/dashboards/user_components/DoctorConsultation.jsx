@@ -178,9 +178,9 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
 
             <div className={`h-[30vh] overflow-y-auto custom-scrollbar p-2 border rounded ${darkTheme ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}>
                 {messages.map((msg, index) => (
-                    <div key={index} className={`p-2 ${msg.sender === "user" ? "text-right" : "text-left"}`}>
-                        <span className={`inline-block px-3 py-1 rounded-md ${msg.sender === "user" ? "bg-blue-500 text-white" : darkTheme ? "bg-gray-600" : "bg-gray-300"}`}>
-                            {msg.text}
+                    <div key={index} className={`p-2 ${msg.senderModel === "user" ? "text-right" : "text-left"}`}>
+                        <span className={`inline-block px-3 py-1 rounded-md ${msg.senderModel === "user" ? "bg-blue-500 text-white" : darkTheme ? "bg-gray-600" : "bg-gray-300"}`}>
+                            {msg.content}
                         </span>
                     </div>
                 ))}

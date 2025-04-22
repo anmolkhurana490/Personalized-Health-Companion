@@ -171,10 +171,10 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
                 {messages.map((message, index) => (
                     <div
                         key={index}
-                        className={`mb-4 ${message.sender === "doctor" ? "text-right" : "text-left"}`}
+                        className={`mb-4 ${message.senderModel === "doctor" ? "text-right" : "text-left"}`}
                     >
                         <p
-                            className={`p-2 rounded w-max ${message.sender === "doctor"
+                            className={`p-2 rounded w-max ${message.senderModel === "doctor"
                                 ? darkTheme
                                     ? "bg-green-600 text-white ml-auto"
                                     : "bg-green-100 text-gray-900 ml-auto"
@@ -183,10 +183,10 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
                                     : "bg-blue-100 text-gray-900"
                                 }`}
                         >
-                            {message.text}
+                            {message.content}
                         </p>
                         <p className="text-sm text-gray-500 mt-1">
-                            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {new Date(message.timestamp).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </p>
                     </div>
                 ))}
