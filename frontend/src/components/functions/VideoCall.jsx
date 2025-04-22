@@ -19,7 +19,6 @@ const VideoCall = () => {
 
     // const [remoteUser, setRemoteUser] = useState(null);
     const [started, setStarted] = useState(false);
-
     const [patient, setPatient] = useState(null);
     const [doctor, setDoctor] = useState(null);
 
@@ -40,6 +39,10 @@ const VideoCall = () => {
 
         fetchAppointmentData();
     }, [])
+
+    useEffect(() => {
+        console.log(profile);
+    }, [profile])
 
 
     // Single Method for Peer Connection
@@ -122,7 +125,7 @@ const VideoCall = () => {
     useEffect(() => {
         startLocalVideo();
 
-        socketRef.current = io(backendURL, { path: '/video-call', withCredentials: true, transports: ['websocket'] });
+        socketRef.current = io(backendURL, { path: '/video-call', withCredentials: true });
 
         socketRef.current.on('connect', () => {
             console.log('Connected to the server:', socketRef.current.id);
@@ -162,8 +165,9 @@ const VideoCall = () => {
     //     setStarted(false);
     // }
 
-    const startCall = async (user) => {
+    const startCall = async () => {
         await startLocalVideo();
+
         await createPeerConnection(user);
 
         const offer = await peerConnection.current.createOffer();
