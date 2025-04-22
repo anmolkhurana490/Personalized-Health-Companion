@@ -13,12 +13,6 @@ const VideoSocketServer = (server) => {
     const users = {};
 
     io.on('connection', socket => {
-        console.log('A user connected:', socket.id);
-
-        socket.on('error', (error) => {
-            console.error('Socket error:', error);
-        });
-        
         socket.on('join-user', user => {
             users[socket.id] = { user, id: socket.id };
             io.emit('user-joined', users);
