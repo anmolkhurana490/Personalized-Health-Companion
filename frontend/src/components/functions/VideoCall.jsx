@@ -29,6 +29,7 @@ const VideoCall = () => {
         const fetchAppointmentData = async () => {
             try {
                 const response = await axios.get(`${backendURL}/dashboard/appointments/appointment?id=${appointmentId}`, { withCredentials: true });
+
                 // Process the data as needed
                 setPatient(response.data.appointment.user);
                 setDoctor(response.data.appointment.doctor);
@@ -121,7 +122,15 @@ const VideoCall = () => {
     useEffect(() => {
         startLocalVideo();
 
-        socketRef.current = io(backendURL, { withCredentials: true });
+        socketRef.current = io(backendURL, { path: '/video-call', withCredentials: true });
+
+        socketRef.current.on('connect', () => {
+            console.log('Connected to the server:', socketRef.current.id);
+        });
+        socketRef.current.on('disconnect', () => {
+            console.log('Disconnected from the server');
+        });
+
         socketRef.current.on('offer', handleOffer);
         socketRef.current.on('answer', handleAnswer);
         socketRef.current.on('icecandidate', handleIceCandidate);
@@ -133,9 +142,9 @@ const VideoCall = () => {
         }
     }, []);
 
-    useEffect(() => {
-        if (profile) socketRef.current.emit('join-user', profile._id);
-    }, [profile])
+    // useEffect(() => {
+    //     if (profile) socketRef.current.emit('join-user', profile._id);
+    // }, [profile])
 
     // const joinUser = (e) => {
     //     e.preventDefault();

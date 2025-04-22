@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 
 const VideoSocketServer = (server) => {
     const io = new Server(server, {
+        path: '/video-call',
         cors: {
             origin: ['http://localhost:5173', 'https://personalized-health-companion.vercel.app'],
             methods: ['GET', 'POST'],
