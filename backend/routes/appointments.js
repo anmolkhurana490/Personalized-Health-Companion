@@ -54,7 +54,7 @@ router.get('/user', async (req, res) => {
                 path: 'doctor'
             },
         });
-        const appointments = user.appointments.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime)).map((entry) => ({ ...entry._doc, doctor: { doctorId: entry.doctor._id, fullName: entry.doctor.personal_info.fullName } }));
+        const appointments = user.appointments.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime)).map((entry) => ({ ...entry._doc, doctor: { doctorId: entry.doctor._id, fullName: entry.doctor.personal_info.fullName } }));
 
         res.json({ success: true, appointments });
     } catch (err) {
@@ -74,7 +74,7 @@ router.get('/doctor', async (req, res) => {
                 path: 'user'
             },
         });
-        const appointments = doctor.appointments.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime)).map((entry) => ({ ...entry._doc, user: { userId: entry.user._id, fullName: entry.user.personal_info.fullName } }));
+        const appointments = doctor.appointments.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime)).map((entry) => ({ ...entry._doc, user: { userId: entry.user._id, fullName: entry.user.personal_info.fullName } }));
 
         res.json({ success: true, appointments });
     } catch (err) {

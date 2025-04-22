@@ -1,11 +1,11 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import VideoCallDoctor from './VideoCallDoctor'
+import VideoCall from './VideoCall'
 
 const FunctionsRoutes = () => {
     return (
         <Routes>
-            <Route path="video-call/*" element={<VideoCallDoctor />} />
+            <Route path="video-call/*" element={<VideoCall />} />
         </Routes>
     )
 }

@@ -167,6 +167,7 @@ const VideoCallDoctor = ({ darkTheme }) => {
             try {
                 const response = await axios.get(`${backendURL}/dashboard/appointments/user/scheduled`, { withCredentials: true });
                 setScheduledAppointments(response.data.appointments);
+                console.log(response.data.appointments);
             } catch (error) {
                 console.error("Error fetching scheduled appointments:", error);
             }
@@ -196,7 +197,7 @@ const VideoCallDoctor = ({ darkTheme }) => {
                         </div>
 
                         {new Date() >= new Date(appointment.dateTime) ? (
-                            <button onClick={() => startCall(appointment.id)} className="bg-blue-500 text-white px-4 py-2 rounded">Start Call</button>
+                            <button onClick={() => startCall(appointment._id)} className="bg-blue-500 text-white px-4 py-2 rounded">Start Call</button>
                         ) : (
                             <p className="text-gray-600">Scheduled on {formattedDate} at {formattedTime}.</p>
                         )}

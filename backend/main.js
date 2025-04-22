@@ -9,7 +9,11 @@ import authenticate_router from "./routes/authenticate.js";
 import chatbot_router from "./routes/chatbot.js";
 import dashboard_router from "./routes/dashboard.js";
 
+import http from "http";
+import VideoSocketServer from "./routes/video_socket.js";
+
 const app = express();
+const server = http.createServer(app);
 let port = 3000;
 
 connectDB();
@@ -32,6 +36,8 @@ app.use('/authenticate', authenticate_router);
 app.use('/gemini-chatbot', chatbot_router);
 app.use('/dashboard', authMiddleware, dashboard_router);
 
-app.listen(port, () => {
-    console.log(`App is listening at port ${port}`);
-})
+VideoSocketServer(server);
+
+server.listen(port, () => {
+    console.log(`Server is listening at port ${port}`);
+});
