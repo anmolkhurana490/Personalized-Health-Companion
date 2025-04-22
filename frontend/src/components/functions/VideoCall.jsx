@@ -6,8 +6,8 @@ import axios from 'axios';
 
 import { AppContext } from "../../AppProvider";
 
-// const backendURL = "https://personalized-health-companion-backend.vercel.app";
-const backendURL = "http://localhost:3000";
+const backendURL = "https://personalized-health-companion-backend.vercel.app";
+// const backendURL = "http://localhost:3000";
 
 const VideoCall = () => {
     const { profile } = useContext(AppContext);
@@ -122,7 +122,7 @@ const VideoCall = () => {
     useEffect(() => {
         startLocalVideo();
 
-        socketRef.current = io(backendURL, { path: '/video-call', withCredentials: true });
+        socketRef.current = io(backendURL, { path: '/video-call', withCredentials: true, transports: ['websocket'] });
 
         socketRef.current.on('connect', () => {
             console.log('Connected to the server:', socketRef.current.id);
