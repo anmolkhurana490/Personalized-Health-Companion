@@ -7,8 +7,10 @@ import axios from 'axios';
 
 import 'react-tabs/style/react-tabs.css';
 import '../../styles.css';
+import { io } from "socket.io-client";
 
 const backendURL = "https://personalized-health-companion-backend.vercel.app";
+// const backendURL = "http://localhost:3000";
 
 const DoctorConsultation = () => {
     const location = useLocation();
@@ -106,11 +108,51 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
         { sender: "doctor", text: "Hello, how can I assist you today?" },
         { sender: "user", text: "I have been experiencing headaches lately." },
     ]);
+    const { profile } = useContext(AppContext);
+    const [remoteId, setRemoteId] = useState(null);
+    const [chatId, setChatId] = useState(null);
 
     const [input, setInput] = useState("");
 
-    const sendMessage = () => {
+    const fetchMessages = async () => {
+        const savedMessages = await axios.get(`${backendURL}/dashboard/chats/`, {
+            params: { user: profile._id, doctor: selectedDoctor.id },
+            withCredentials: true
+        });
+        setMessages(savedMessages.data.chats.messages);
+        setChatId(savedMessages.data.chats._id);
+    }
+
+    useEffect(() => {
+        const socket = io(backendURL, {
+            path: '/chat',
+            withCredentials: true,
+        });
+
+        if (selectedDoctor) {
+            socket.emit('join-user', { user: profile._id, remote: selectedDoctor.id });
+            fetchMessages();
+        }
+
+        socket.on('user-joined', (user) => {
+            setRemoteId(user.id);
+        });
+
+        socket.on('receive-message', ({ from, message }) => {
+            if (remoteId === from) setMessages((prev) => [...prev, { sender: 'doctor', text: message }]);
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, [selectedDoctor]);
+
+    const sendMessage = async () => {
         if (input.trim()) {
+            socket.emit('send-message', { from: socket.id, to: remoteId, message: input });
+
+            await axios.post(`${backendURL}/dashboard/chats/`, { chatId, message: input }, { withCredentials: true });
+
             setMessages((prev) => [...prev, { sender: "user", text: input }]);
             setInput("");
         }

@@ -49,4 +49,35 @@ const VideoSocketServer = (server) => {
     });
 };
 
-export default VideoSocketServer;
+const ChatSocketServer = (server) => {
+    const io = new Server(server, {
+        path: '/chat',
+        cors: {
+            origin: ['http://localhost:5173', 'https://personalized-health-companion.vercel.app'],
+            methods: ['GET', 'POST'],
+            credentials: true
+        }
+    });
+
+    const users = {};
+
+    io.on('connection', socket => {
+        socket.on('join-user', ({ user, remote }) => {
+            users[socket.id] = { user, id: socket.id };
+
+            const to = Object.values(users).find(user => user === remote).id;
+            if (to) socket.to(to).emit('user-joined', users[socket.id]);
+        });
+
+        socket.on('send-message', ({ from, to, message }) => {
+            if (to) socket.to(to).emit('receive-message', { from, message });
+        });
+
+        socket.on('disconnect', () => {
+            delete users[socket.id];
+            socket.leave();
+        });
+    });
+}
+
+export { VideoSocketServer, ChatSocketServer };

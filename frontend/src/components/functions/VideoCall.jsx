@@ -6,11 +6,11 @@ import axios from 'axios';
 
 import { AppContext } from "../../AppProvider";
 
-const backendURL = "https://personalized-health-companion-backend.vercel.app";
-// const backendURL = "http://localhost:3000";
+// const backendURL = "https://personalized-health-companion-backend.vercel.app";
+const backendURL = "http://localhost:3000";
 
 const VideoCall = () => {
-    const { profile } = useContext(AppContext);
+    const { profile, currRole } = useContext(AppContext);
 
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
@@ -22,9 +22,9 @@ const VideoCall = () => {
     const [patient, setPatient] = useState(null);
     const [doctor, setDoctor] = useState(null);
 
-    useEffect(() => {
-        const appointmentId = window.location.pathname.split("/").pop();
+    const [appointmentId, setAppointmentId] = useState(window.location.pathname.split("/").pop());
 
+    useEffect(() => {
         const fetchAppointmentData = async () => {
             try {
                 const response = await axios.get(`${backendURL}/dashboard/appointments/appointment?id=${appointmentId}`, { withCredentials: true });
@@ -39,10 +39,6 @@ const VideoCall = () => {
 
         fetchAppointmentData();
     }, [])
-
-    useEffect(() => {
-        console.log(profile);
-    }, [profile])
 
 
     // Single Method for Peer Connection
@@ -125,7 +121,7 @@ const VideoCall = () => {
     useEffect(() => {
         startLocalVideo();
 
-        socketRef.current = io(backendURL, { path: '/video-call', withCredentials: true });
+        socketRef.current = io(backendURL, { path: '/video-call', transports: ['websocket'], withCredentials: true, autoConnect: true });
 
         socketRef.current.on('connect', () => {
             console.log('Connected to the server:', socketRef.current.id);
@@ -168,17 +164,26 @@ const VideoCall = () => {
     const startCall = async () => {
         await startLocalVideo();
 
-        await createPeerConnection(user);
+        let remoteId = currRole === 'user' ? doctor.id : patient.id;
+        await createPeerConnection(remoteId);
 
         const offer = await peerConnection.current.createOffer();
         await peerConnection.current.setLocalDescription(offer);
-        socketRef.current.emit('offer', { from: socketRef.current.id, to: user, offer: peerConnection.current.localDescription });
+        socketRef.current.emit('offer', { from: socketRef.current.id, to: remoteId, offer: peerConnection.current.localDescription });
 
-        // setRemoteUser(user);
+        if (currRole === 'doctor') {
+            try {
+                await axios.put(`${backendURL}/appointments/start?id=${appointmentId}`, {}, { withCredentials: true });
+            } catch (error) {
+                console.error('Error starting appointment:', error);
+            }
+        }
+
+        // setRemoteUser(remoteId);
     }
 
 
-    const endCall = () => {
+    const endCall = async () => {
         if (localVideoRef.current.srcObject) {
             localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
             localVideoRef.current.srcObject = null;
@@ -194,6 +199,13 @@ const VideoCall = () => {
             peerConnection.current = null;
         }
 
+        if (currRole === 'doctor') {
+            try {
+                await axios.put(`${backendURL}/appointments/complete?id=${appointmentId}`, {}, { withCredentials: true });
+            } catch (error) {
+                console.error('Error starting appointment:', error);
+            }
+        }
         // setRemoteUser(null);
     }
 

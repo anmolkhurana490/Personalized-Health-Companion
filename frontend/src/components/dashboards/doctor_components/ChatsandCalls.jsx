@@ -82,6 +82,60 @@ const PatientList = ({ patients, setSelectedPatient, darkTheme }) => {
 };
 
 const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
+    const [messages, setMessages] = useState([
+        { sender: "doctor", text: "Hello, how can I assist you today?" },
+        { sender: "user", text: "I have been experiencing headaches lately." },
+    ]);
+    const { profile } = useContext(AppContext);
+    const [remoteId, setRemoteId] = useState(null);
+    const [chatId, setChatId] = useState(null);
+
+    const [input, setInput] = useState("");
+
+    const fetchMessages = async () => {
+        const savedMessages = await axios.get(`${backendURL}/dashboard/chats/`, {
+            params: { doctor: profile._id, user: patient.id },
+            withCredentials: true
+        });
+        setMessages(savedMessages.data.chats.messages);
+        setChatId(savedMessages.data.chats._id);
+    }
+
+    useEffect(() => {
+        const socket = io(backendURL, {
+            path: '/chat',
+            withCredentials: true,
+        });
+
+        if (selectedDoctor) {
+            socket.emit('join-user', { user: profile._id, remote: patient.id });
+            fetchMessages();
+        }
+
+        socket.on('user-joined', (user) => {
+            setRemoteId(user.id);
+        });
+
+        socket.on('receive-message', ({ from, message }) => {
+            if (remoteId === from) setMessages((prev) => [...prev, { sender: 'user', text: message }]);
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, [patient]);
+
+    const sendMessage = async () => {
+        if (input.trim()) {
+            socket.emit('send-message', { from: socket.id, to: remoteId, message: input });
+
+            await axios.post(`${backendURL}/dashboard/chats/`, { chatId, message: input }, { withCredentials: true });
+
+            setMessages((prev) => [...prev, { sender: "doctor", text: input }]);
+            setInput("");
+        }
+    };
+
     return (
         <div className="flex flex-col h-full">
             <div className={`p-4 border-b flex items-center justify-between ${darkTheme ? "bg-gray-700 text-gray-100" : "bg-white text-gray-900"}`}>

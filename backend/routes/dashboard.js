@@ -1,11 +1,13 @@
 import express from "express";
 import profileRouter from "./profile.js";
 import appointmentRoutes from './appointments.js';
+import chatRoutes from './chats.js';
 
 const router = express.Router();
 
 router.use('/profile', profileRouter);
 router.use('/appointments', appointmentRoutes);
+router.use('/chats', chatRoutes);
 
 router.post('/doctor', async (req, res) => {
     try {
