@@ -177,7 +177,7 @@ const cancelExpiredAppointments = async () => {
     }
 }
 
-cron.schedule('*/5 * * * *', cancelExpiredAppointments);
+cron.schedule('0,30 * * * *', cancelExpiredAppointments);
 
 // Get Available Doctors
 router.get('/available-doctors', async (req, res) => {
