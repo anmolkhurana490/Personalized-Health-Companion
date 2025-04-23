@@ -80,7 +80,7 @@ const ChatWithDoctor = ({ darkTheme, preSelectedDoctorId, appointmentId }) => {
     const onBack = () => setSelectedDoctor(null);
 
     return (
-        <div className={`h-[50vh] rounded-lg p-4 ${darkTheme ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}>
+        <div className={`h-[60vh] rounded-lg p-4 ${darkTheme ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'}`}>
             {selectedDoctor ? (
                 <Chat selectedDoctor={selectedDoctor} onBack={onBack} darkTheme={darkTheme} />
             ) : (
@@ -105,8 +105,8 @@ const ChatWithDoctor = ({ darkTheme, preSelectedDoctorId, appointmentId }) => {
 
 const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
     const [messages, setMessages] = useState([
-        { sender: "doctor", text: "Hello, how can I assist you today?" },
-        { sender: "user", text: "I have been experiencing headaches lately." },
+        // { senderModel: "doctor", content: "Hello, how can I assist you today?", timestamp: new Date() },
+        // { senderModel: "user", content: "I have been experiencing headaches lately.", timestamp: new Date() },
     ]);
 
     const socketRef = useRef(null);
@@ -141,7 +141,7 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
         });
 
         socketRef.current.on('receive-message', ({ from, message }) => {
-            if (remoteId === from) setMessages((prev) => [...prev, { sender: 'doctor', text: message }]);
+            if (remoteId === from) setMessages((prev) => [...prev, { senderModel: 'doctor', content: message, time: new Date() }]);
         });
 
         return () => {
@@ -155,7 +155,7 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
 
             await axios.post(`${backendURL}/dashboard/chats/`, { chatId, message: input }, { withCredentials: true });
 
-            setMessages((prev) => [...prev, { sender: "user", text: input }]);
+            setMessages((prev) => [...prev, { senderModel: "user", content: input, timestamp: new Date() }]);
             setInput("");
         }
     };
@@ -176,12 +176,15 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
                 </div>
             </div>
 
-            <div className={`h-[30vh] overflow-y-auto custom-scrollbar p-2 border rounded ${darkTheme ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}>
+            <div className={`h-[40vh] overflow-y-auto custom-scrollbar p-2 border rounded ${darkTheme ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}>
                 {messages.map((msg, index) => (
                     <div key={index} className={`p-2 ${msg.senderModel === "user" ? "text-right" : "text-left"}`}>
                         <span className={`inline-block px-3 py-1 rounded-md ${msg.senderModel === "user" ? "bg-blue-500 text-white" : darkTheme ? "bg-gray-600" : "bg-gray-300"}`}>
                             {msg.content}
                         </span>
+                        <p className="text-sm text-gray-500 mt-1">
+                            {new Date(msg.timestamp).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </p>
                     </div>
                 ))}
             </div>

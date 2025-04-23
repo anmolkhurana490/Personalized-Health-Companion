@@ -84,8 +84,8 @@ const PatientList = ({ patients, setSelectedPatient, darkTheme }) => {
 
 const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
     const [messages, setMessages] = useState([
-        { sender: "doctor", text: "Hello, how can I assist you today?" },
-        { sender: "user", text: "I have been experiencing headaches lately." },
+        // { senderModel: "doctor", content: "Hello, how can I assist you today?", timestamp: new Date() },
+        // { senderModel: "user", content: "I have been experiencing headaches lately.", timestamp: new Date() },
     ]);
 
     const socketRef = useRef(null);
@@ -120,7 +120,7 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
         //     });
 
         //     socketRef.current.on('receive-message', ({ from, message }) => {
-        //         if (remoteId === from) setMessages((prev) => [...prev, { sender: 'user', text: message }]);
+        //         if (remoteId === from) setMessages((prev) => [...prev, { senderModel: 'user', content: message, timestamp: new Date() }]);
         //     });
 
         //     return () => {
@@ -135,7 +135,7 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
 
                 await axios.post(`${backendURL}/dashboard/chats/`, { chatId, message: input }, { withCredentials: true });
 
-                setMessages((prev) => [...prev, { sender: "doctor", text: input }]);
+                setMessages((prev) => [...prev, { senderModel: "doctor", content: input, timestamp: new Date() }]);
                 setInput("");
             }
         }
