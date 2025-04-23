@@ -9,8 +9,7 @@ import 'react-tabs/style/react-tabs.css';
 import '../../styles.css';
 import { io } from "socket.io-client";
 
-const backendURL = "https://personalized-health-companion-backend.vercel.app";
-// const backendURL = "http://localhost:3000";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const DoctorConsultation = () => {
     const location = useLocation();

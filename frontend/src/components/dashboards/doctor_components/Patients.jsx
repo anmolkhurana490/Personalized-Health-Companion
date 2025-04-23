@@ -2,7 +2,7 @@ import React, { use, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../AppProvider";
 import axios from "axios";
 
-const backendURL = "https://personalized-health-companion-backend.vercel.app";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const Patients = ({ profile }) => {
     const { darkTheme } = useContext(AppContext);

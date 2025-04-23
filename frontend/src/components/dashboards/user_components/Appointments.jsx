@@ -6,7 +6,7 @@ import { FaListUl } from "react-icons/fa";
 import { IoGrid } from "react-icons/io5";
 import { AppContext } from '../../../AppProvider';
 
-const backendURL = "https://personalized-health-companion-backend.vercel.app";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const Appointments = () => {
     const [view, setView] = useState('list');

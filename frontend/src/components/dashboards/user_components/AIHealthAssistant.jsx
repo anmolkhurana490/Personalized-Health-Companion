@@ -5,7 +5,7 @@ import axios from 'axios';
 
 import { AppContext } from "../../../AppProvider";
 
-const backendURL = "https://personalized-health-companion-backend.vercel.app";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const AIHealthAssistant = () => {
     const { darkTheme } = useContext(AppContext);
@@ -88,12 +88,12 @@ const AIHealthAssistant = () => {
                                 )}
                                 <p
                                     className={`inline-block p-2 rounded max-w-[70%] text-wrap break-words ${message.role === 'user'
-                                            ? darkTheme
-                                                ? "bg-blue-900 text-gray-100"
-                                                : "bg-blue-100 text-gray-900"
-                                            : darkTheme
-                                                ? "bg-blue-700 text-gray-100"
-                                                : "bg-blue-200 text-gray-900"
+                                        ? darkTheme
+                                            ? "bg-blue-900 text-gray-100"
+                                            : "bg-blue-100 text-gray-900"
+                                        : darkTheme
+                                            ? "bg-blue-700 text-gray-100"
+                                            : "bg-blue-200 text-gray-900"
                                         }`}
                                 >
                                     {message.text}
@@ -111,15 +111,15 @@ const AIHealthAssistant = () => {
                         disabled={loading}
                         onChange={(e) => setInput(e.target.value)}
                         className={`flex-1 p-2 border rounded-l ${darkTheme
-                                ? "border-gray-600 bg-gray-700 text-gray-100"
-                                : "border-gray-300 bg-white text-gray-900"
+                            ? "border-gray-600 bg-gray-700 text-gray-100"
+                            : "border-gray-300 bg-white text-gray-900"
                             }`}
                         placeholder="Ask your health question..."
                     />
                     <button
                         className={`p-2 rounded-r ${darkTheme
-                                ? "bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-gray-100"
-                                : "bg-blue-500 hover:bg-blue-600 disabled:bg-blue-700 text-white"
+                            ? "bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-gray-100"
+                            : "bg-blue-500 hover:bg-blue-600 disabled:bg-blue-700 text-white"
                             }`}
                         type="submit"
                         disabled={loading}

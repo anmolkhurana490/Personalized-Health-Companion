@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { AppContext } from "../../AppProvider";
 import axios from "axios";
 
-const backendURL = "https://personalized-health-companion-backend.vercel.app";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 export const loginSubmit = async (data, setProfile, setLoggedIn, setError, navigate, setCurrRole) => {
     try {

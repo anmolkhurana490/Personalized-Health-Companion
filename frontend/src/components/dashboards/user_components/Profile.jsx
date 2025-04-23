@@ -4,7 +4,7 @@ import form_data from '../../Auth_Components/formComponent_data';
 import axios from "axios";
 import { AppContext } from "../../../AppProvider";
 
-const backendURL = "https://personalized-health-companion-backend.vercel.app";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const Profile = ({ profile, setProfile, currRole }) => {
     const { darkTheme } = useContext(AppContext);

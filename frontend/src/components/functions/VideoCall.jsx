@@ -6,8 +6,7 @@ import axios from 'axios';
 
 import { AppContext } from "../../AppProvider";
 
-// const backendURL = "https://personalized-health-companion-backend.vercel.app";
-const backendURL = "http://localhost:3000";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const VideoCall = () => {
     const { profile, currRole } = useContext(AppContext);

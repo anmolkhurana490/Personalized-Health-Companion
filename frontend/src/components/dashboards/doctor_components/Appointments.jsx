@@ -6,7 +6,7 @@ import axios from 'axios';
 import 'react-tabs/style/react-tabs.css';
 import '../../styles.css';
 
-const backendURL = "https://personalized-health-companion-backend.vercel.app";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const Appointments = () => {
     const { darkTheme } = useContext(AppContext);

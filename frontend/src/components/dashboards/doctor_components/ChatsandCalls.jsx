@@ -4,7 +4,7 @@ import { AppContext } from '../../../AppProvider';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 
-const backendURL = "https://personalized-health-companion-backend.vercel.app";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const ChatsAndCalls = () => {
     const { darkTheme } = useContext(AppContext);

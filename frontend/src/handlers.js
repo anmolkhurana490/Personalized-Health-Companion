@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const backendURL = "https://personalized-health-companion-backend.vercel.app";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 export const getProfile = (setProfile, setLoggedIn, setCurrRole) => {
     axios.get(`${backendURL}/dashboard/profile`, { withCredentials: true })
