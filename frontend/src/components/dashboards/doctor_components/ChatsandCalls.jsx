@@ -26,7 +26,7 @@ const ChatsAndCalls = () => {
     }, [])
 
     return (
-        <div className={`h-screen flex flex-col ${darkTheme ? "bg-gray-800 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
+        <div className={`h-[80vh] flex flex-col ${darkTheme ? "bg-gray-800 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
             {!selectedPatient ? (
                 <PatientList patients={patients} setSelectedPatient={setSelectedPatient} darkTheme={darkTheme} />
             ) : (
