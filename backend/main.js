@@ -4,10 +4,13 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import authMiddleware from "./middlewares/authen_middleware.js";
+import cron from "node-cron";
 
 import authenticate_router from "./routes/authenticate.js";
 import chatbot_router from "./routes/chatbot.js";
 import dashboard_router from "./routes/dashboard.js";
+
+import { updateHealthData } from "./api/updateRealTimeData.js";
 
 import http from "http";
 import { VideoSocketServer, ChatSocketServer } from "./routes/websockets.js";
@@ -35,6 +38,8 @@ app.use(cookieParser());
 app.use('/authenticate', authenticate_router);
 app.use('/gemini-chatbot', chatbot_router);
 app.use('/dashboard', authMiddleware, dashboard_router);
+
+cron.schedule('0 8,18 * * *', updateHealthData);
 
 VideoSocketServer(server);
 ChatSocketServer(server);
