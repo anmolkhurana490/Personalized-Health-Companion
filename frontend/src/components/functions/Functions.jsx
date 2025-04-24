@@ -12,7 +12,7 @@ const FunctionsRoutes = () => {
 
 const Functions = () => {
     return (
-        <div className='w-3/5'>
+        <div className='w-3/5 not-sm:w-full'>
             <FunctionsRoutes />
         </div>
     )

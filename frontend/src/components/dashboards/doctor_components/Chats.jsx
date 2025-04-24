@@ -1,15 +1,19 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { IoArrowBackOutline } from "react-icons/io5";
 import { AppContext } from '../../../AppProvider';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-const ChatsAndCalls = () => {
+const Chats = () => {
     const { darkTheme } = useContext(AppContext);
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [patients, setPatients] = useState([])
+
+    const location = useLocation();
+    const preselectedPatientId = location.state?.userId;
 
     // const patients = [
     //     { id: 1, name: "John Doe", lastChat: "2 hours ago", avatar: "https://via.placeholder.com/40" },
@@ -24,6 +28,12 @@ const ChatsAndCalls = () => {
         }
         fetchPatients();
     }, [])
+
+    useEffect(() => {
+        if (preselectedPatientId) {
+            setSelectedPatient(patients?.find(patient => patient.user.id === preselectedPatientId));
+        }
+    }, [preselectedPatientId, patients]);
 
     return (
         <div className={`h-[80vh] flex flex-col ${darkTheme ? "bg-gray-800 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
@@ -40,7 +50,7 @@ const PatientList = ({ patients, setSelectedPatient, darkTheme }) => {
     return (
         <div className="flex flex-col h-full">
             <div className={`p-4 border-b ${darkTheme ? "bg-gray-700 text-gray-100" : "bg-gray-200 text-gray-900"}`}>
-                <h2 className="text-lg font-semibold">Chat/Call with Patients</h2>
+                <h2 className="text-lg font-semibold">Chat with Patients</h2>
             </div>
             <div className="flex-1 overflow-y-auto p-4">
                 <ul className="space-y-4">
@@ -68,10 +78,9 @@ const PatientList = ({ patients, setSelectedPatient, darkTheme }) => {
                                     Chat
                                 </button>
                                 <button
-                                    onClick={() => setSelectedPatient(patient)}
                                     className={`px-4 py-2 rounded ${darkTheme ? "bg-blue-500 text-white" : "bg-blue-500 text-white"} hover:bg-blue-600`}
                                 >
-                                    Video Call
+                                    View Profile
                                 </button>
                             </div>
                         </li>
@@ -90,7 +99,7 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
 
     const socketRef = useRef(null);
     const { profile } = useContext(AppContext);
-    const [remoteId, setRemoteId] = useState(null);
+    const [roomId, setRoomId] = useState(null);
     const [chatId, setChatId] = useState(null);
 
     const [input, setInput] = useState("");
@@ -105,33 +114,47 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
     }
 
     useEffect(() => {
-        //     socketRef.current = io(backendURL, {
-        //         path: '/chat',
-        //         withCredentials: true,
-        //     });
+        socketRef.current = io(backendURL, {
+            path: '/chat',
+            withCredentials: true,
+        });
 
         if (patient) {
-            // socketRef.current.emit('join-user', { user: profile._id, remote: patient.user.id });
+            socketRef.current.emit('join-user', { userId: profile._id, remoteId: patient.user.id });
             fetchMessages();
         }
 
-        //     socketRef.current.on('user-joined', (user) => {
-        //         setRemoteId(user.id);
-        //     });
+        socketRef.current.on('connect', () => {
+            console.log('Connected to socket server', socketRef.current.id);
+        });
 
-        //     socketRef.current.on('receive-message', ({ from, message }) => {
-        //         if (remoteId === from) setMessages((prev) => [...prev, { senderModel: 'user', content: message, timestamp: new Date() }]);
-        //     });
+        socketRef.current.on('user-joined', ({ roomId }) => {
+            // console.log('User joined');
+            setRoomId(roomId);
+        });
 
-        //     return () => {
-        //         socketRef.current.disconnect();
-        //     };
+        // socketRef.current.on('busy-remote', () => {
+        //     console.log('Remote user is busy');
+        // });
+
+        socketRef.current.on('receive-message', ({ message }) => {
+            // console.log('Received message:', message);
+            setMessages((prev) => [...prev, { senderModel: 'user', content: message, timestamp: new Date() }]);
+        });
+
+        return () => {
+            socketRef.current.disconnect();
+        };
     }, [patient]);
+
+    // useEffect(() => {
+    //     console.log('roomId:', roomId);
+    // }, [roomId])
 
     const sendMessage = async () => {
         try {
             if (input.trim()) {
-                // socketRef.current.emit('send-message', { from: socketRef.current.id, to: remoteId, message: input });
+                socketRef.current.emit('send-message', { roomId, message: input });
 
                 await axios.post(`${backendURL}/dashboard/chats/`, { chatId, message: input }, { withCredentials: true });
 
@@ -161,11 +184,6 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
                     />
                     <h2 className="text-lg font-semibold">Chat with {patient.user.personal_info.fullName}</h2>
                 </div>
-                <button
-                    className={`px-4 py-2 rounded shadow ${darkTheme ? "bg-blue-500 text-white" : "bg-blue-500 text-white"} hover:bg-blue-600`}
-                >
-                    Start Video Call
-                </button>
             </div>
             <div className={`flex-1 p-4 overflow-y-auto ${darkTheme ? "bg-gray-800 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
                 {messages.map((message, index) => (
@@ -210,4 +228,4 @@ const ChatWindow = ({ patient, setSelectedPatient, darkTheme }) => {
     );
 };
 
-export default ChatsAndCalls;
+export default Chats;

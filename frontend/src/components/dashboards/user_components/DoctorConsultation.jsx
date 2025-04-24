@@ -110,7 +110,7 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
 
     const socketRef = useRef(null);
     const { profile } = useContext(AppContext);
-    const [remoteId, setRemoteId] = useState(null);
+    const [roomId, setRoomId] = useState(null);
     const [chatId, setChatId] = useState(null);
 
     const [input, setInput] = useState("");
@@ -124,6 +124,10 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
         setChatId(savedMessages.data.chats._id);
     }
 
+    // useEffect(() => {
+    //     console.log('roomId:', roomId);
+    // }, [roomId])
+
     useEffect(() => {
         socketRef.current = io(backendURL, {
             path: '/chat',
@@ -131,17 +135,26 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
         });
 
         if (selectedDoctor) {
-            socketRef.current.emit('join-user', { user: profile._id, remote: selectedDoctor.id });
+            socketRef.current.emit('join-user', { userId: profile._id, remoteId: selectedDoctor.id });
             fetchMessages();
         }
 
-        socketRef.current.on('user-joined', (user) => {
-            setRemoteId(user.id);
+        socketRef.current.on('connect', () => {
+            console.log('Connected to socket server', socketRef.current.id);
         });
 
-        socketRef.current.on('receive-message', ({ from, message }) => {
-            if (remoteId === from) setMessages((prev) => [...prev, { senderModel: 'doctor', content: message, time: new Date() }]);
+        socketRef.current.on('user-joined', ({ roomId }) => {
+            setRoomId(roomId);
         });
+
+        socketRef.current.on('receive-message', ({ message }) => {
+            // console.log('Received message:', message);
+            setMessages((prev) => [...prev, { senderModel: 'doctor', content: message, time: new Date() }]);
+        });
+
+        // socketRef.current.on('busy-remote', () => {
+        //     console.log('Remote user is busy');
+        // });
 
         return () => {
             socketRef.current.disconnect();
@@ -150,7 +163,7 @@ const Chat = ({ selectedDoctor, onBack, darkTheme }) => {
 
     const sendMessage = async () => {
         if (input.trim()) {
-            socketRef.current.emit('send-message', { from: socketRef.current.id, to: remoteId, message: input });
+            socketRef.current.emit('send-message', { roomId, message: input });
 
             await axios.post(`${backendURL}/dashboard/chats/`, { chatId, message: input }, { withCredentials: true });
 

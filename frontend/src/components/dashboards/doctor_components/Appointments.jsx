@@ -1,6 +1,7 @@
 import React, { use, useContext, useEffect, useState } from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { AppContext } from '../../../AppProvider';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import 'react-tabs/style/react-tabs.css';
@@ -10,10 +11,12 @@ const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const Appointments = () => {
     const { darkTheme } = useContext(AppContext);
-    const [activeTab, setActiveTab] = React.useState('upcoming');
+    const [activeTab, setActiveTab] = React.useState('scheduled');
 
     const [appointments, setAppointments] = useState([]);
     const [filteredAppointments, setFilteredAppointments] = useState([]);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchAppointments = async () => {
@@ -25,8 +28,8 @@ const Appointments = () => {
 
     useEffect(() => {
         const filtered = appointments?.filter(appointment => {
-            if (activeTab === 'upcoming') {
-                return new Date(appointment.dateTime) > new Date();
+            if (activeTab === 'scheduled') {
+                return new Date(appointment.dateTime) > new Date() || appointment.status === 'scheduled';
             } else if (activeTab === 'past') {
                 return new Date(appointment.dateTime) < new Date();
             }
@@ -44,7 +47,15 @@ const Appointments = () => {
         }
     };
 
-    const options = ["upcoming", "past"];
+    const startChat = (id, userId) => {
+        navigate('/dashboard/doctor/chats', { state: { userId } });
+    };
+
+    const startCall = (id, userId) => {
+        window.open(`/user/video-call/${id}`, '_blank');
+    };
+
+    const options = ["scheduled", "past"];
 
     return (
         <div
@@ -66,7 +77,14 @@ const Appointments = () => {
 
                 {options.map((option, index) => (
                     <TabPanel key={index}>
-                        <FilteredAppointments appointments={filteredAppointments} activeTab={option} darkTheme={darkTheme} cancelAppointment={cancelAppointment} />
+                        <FilteredAppointments
+                            appointments={filteredAppointments}
+                            activeTab={option}
+                            darkTheme={darkTheme}
+                            cancelAppointment={cancelAppointment}
+                            startChat={startChat}
+                            startCall={startCall}
+                        />
                     </TabPanel>
                 ))}
             </Tabs>
@@ -74,7 +92,7 @@ const Appointments = () => {
     );
 };
 
-const FilteredAppointments = ({ appointments, activeTab, darkTheme, cancelAppointment }) => {
+const FilteredAppointments = ({ appointments, activeTab, darkTheme, cancelAppointment, startChat, startCall }) => {
     if (appointments?.length === 0) {
         return <p>No appointments available.</p>;
     }
@@ -94,11 +112,23 @@ const FilteredAppointments = ({ appointments, activeTab, darkTheme, cancelAppoin
                     {appointment.reason && <p><strong>Reason:</strong> {appointment.reason}</p>}
 
                     <div className="mt-2 flex flex-wrap gap-2 items-center">
-                        {activeTab === 'upcoming' && (
+                        {activeTab === 'scheduled' && (
                             <>
-                                <button className={`px-4 py-2 rounded ${darkTheme ? "bg-blue-500 text-white" : "bg-blue-500 text-white"} hover:bg-blue-600`}>Join Call</button>
-                                <button className={`px-4 py-2 rounded ${darkTheme ? "bg-green-500 text-white" : "bg-green-500 text-white"} hover:bg-green-600`}>Chat</button>
+                                <button
+                                    className={`px-4 py-2 rounded ${darkTheme ? "bg-blue-500 text-white" : "bg-blue-500 text-white"} hover:bg-blue-600`}
+                                    onClick={() => startCall(appointment._id, appointment.user.userId)}
+                                >
+                                    Join Call
+                                </button>
+                                <button
+                                    className={`px-4 py-2 rounded ${darkTheme ? "bg-green-500 text-white" : "bg-green-500 text-white"} hover:bg-green-600`}
+                                    onClick={() => startChat(appointment._id, appointment.user.userId)}
+                                >
+                                    Chat
+                                </button>
+
                                 <button className={`px-4 py-2 rounded ${darkTheme ? "bg-gray-600 text-gray-100" : "bg-gray-300 text-gray-900"} hover:bg-gray-400`}>View Profile</button>
+
                                 <button onClick={() => cancelAppointment(appointment._id)} className={`px-4 py-2 rounded ${darkTheme ? "bg-red-600 text-gray-100" : "bg-red-300 text-gray-900"} hover:bg-red-400`}>Cancel</button>
                             </>
                         )}

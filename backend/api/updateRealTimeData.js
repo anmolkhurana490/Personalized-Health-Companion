@@ -67,9 +67,9 @@ async function updateHealthData() {
 
     for (const healthRecord of healthRecords) {
         const weightHistory = updateWeightHistory(healthRecord.weightHistory, healthData.weight);
-        const heartRateHistory = updateHeartRateHistory(healthRecord.heartRateHistory, healthData.heartRate);
+        const heartRateLogs = updateHeartRateHistory(healthRecord.heartRateLogs, healthData.heartRate);
 
-        await HealthRecord.findByIdAndUpdate(healthRecord._id, { weight: healthData.weight, heartRate: healthData.heartRate, weightHistory, heartRateHistory });
+        await HealthRecord.findByIdAndUpdate(healthRecord._id, { weight: healthData.weight, heartRate: healthData.heartRate, weightHistory, heartRateLogs });
     }
 }
 

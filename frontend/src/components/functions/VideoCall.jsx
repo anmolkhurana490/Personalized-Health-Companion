@@ -9,19 +9,18 @@ import { AppContext } from "../../AppProvider";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const VideoCall = () => {
-    const { profile, currRole } = useContext(AppContext);
+    const { profile, currRole, darkTheme } = useContext(AppContext);
 
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
     const socketRef = useRef(null);
     const peerConnection = useRef(null);
 
-    // const [remoteUser, setRemoteUser] = useState(null);
     const [started, setStarted] = useState(false);
     const [patient, setPatient] = useState(null);
     const [doctor, setDoctor] = useState(null);
 
-    const [appointmentId, setAppointmentId] = useState(window.location.pathname.split("/").pop());
+    const appointmentId = window.location.pathname.split("/").pop();
 
     useEffect(() => {
         const fetchAppointmentData = async () => {
@@ -79,6 +78,7 @@ const VideoCall = () => {
     }
 
     const handleOffer = async ({ from, to, offer }) => {
+        // console.log('Received offer:', offer);
         if (peerConnection.current) {
             socketRef.current.emit('remote-busy', { from: to, to: from });
             return;
@@ -86,7 +86,7 @@ const VideoCall = () => {
         else {
             await startLocalVideo();
             await createPeerConnection(from);
-            // setRemoteUser(from);
+            setStarted(true);
         }
 
         const pc = peerConnection.current;
@@ -98,7 +98,8 @@ const VideoCall = () => {
         socketRef.current.emit('answer', { from: to, to: from, answer: pc.localDescription.toJSON() });
     }
 
-    const handleAnswer = async ({ answer }) => {
+    const handleAnswer = async ({ from, answer }) => {
+        peerConnection.current.remoteUserId = from;
         await peerConnection.current.setRemoteDescription(answer);
     }
 
@@ -112,9 +113,60 @@ const VideoCall = () => {
         endCall();
     }
 
-    const handleCallEnded = () => {
+    const handleCallEnded = async () => {
+        if (localVideoRef.current.srcObject) {
+            localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+            localVideoRef.current.srcObject = null;
+        }
+
+        if (remoteVideoRef.current.srcObject) {
+            remoteVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+            remoteVideoRef.current.srcObject = null;
+        }
+
+        if (peerConnection.current) {
+            peerConnection.current.close();
+            peerConnection.current = null;
+        }
+
+        if (currRole === 'doctor') {
+            try {
+                await axios.put(`${backendURL}/dashboard/appointments/complete?id=${appointmentId}`, {}, { withCredentials: true });
+            } catch (error) {
+                console.error('Error starting appointment:', error);
+            }
+        }
+
+        setStarted(false);
         console.log('Call ended');
-        endCall();
+        // setRemoteUser(null);
+    }
+
+    const startCall = async () => {
+        await startLocalVideo();
+
+        let remoteId = currRole === 'user' ? doctor.id : patient.id;
+        await createPeerConnection(remoteId);
+
+        const offer = await peerConnection.current.createOffer();
+        await peerConnection.current.setLocalDescription(offer);
+        socketRef.current.emit('offer', { from: socketRef.current.id, remoteId, offer: peerConnection.current.localDescription });
+
+        if (currRole === 'doctor') {
+            try {
+                await axios.put(`${backendURL}/dashboard/appointments/start?id=${appointmentId}`, {}, { withCredentials: true });
+            } catch (error) {
+                console.error('Error starting appointment:', error);
+            }
+        }
+
+        setStarted(true);
+        // setRemoteUser(remoteId);
+    }
+
+    const endCall = () => {
+        socketRef.current.emit('end-call', { from: socketRef.current.id, to: peerConnection.current.remoteUserId });
+        handleCallEnded();
     }
 
     useEffect(() => {
@@ -143,9 +195,9 @@ const VideoCall = () => {
         }
     }, []);
 
-    // useEffect(() => {
-    //     if (profile) socketRef.current.emit('join-user', profile._id);
-    // }, [profile])
+    useEffect(() => {
+        if (profile) socketRef.current.emit('join-user', profile._id);
+    }, [profile])
 
     // const joinUser = (e) => {
     //     e.preventDefault();
@@ -160,53 +212,6 @@ const VideoCall = () => {
     //     setStarted(false);
     // }
 
-    const startCall = async () => {
-        await startLocalVideo();
-
-        let remoteId = currRole === 'user' ? doctor.id : patient.id;
-        await createPeerConnection(remoteId);
-
-        const offer = await peerConnection.current.createOffer();
-        await peerConnection.current.setLocalDescription(offer);
-        socketRef.current.emit('offer', { from: socketRef.current.id, to: remoteId, offer: peerConnection.current.localDescription });
-
-        if (currRole === 'doctor') {
-            try {
-                await axios.put(`${backendURL}/appointments/start?id=${appointmentId}`, {}, { withCredentials: true });
-            } catch (error) {
-                console.error('Error starting appointment:', error);
-            }
-        }
-
-        // setRemoteUser(remoteId);
-    }
-
-
-    const endCall = async () => {
-        if (localVideoRef.current.srcObject) {
-            localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
-            localVideoRef.current.srcObject = null;
-        }
-
-        if (remoteVideoRef.current.srcObject) {
-            remoteVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
-            remoteVideoRef.current.srcObject = null;
-        }
-
-        if (peerConnection.current) {
-            peerConnection.current.close();
-            peerConnection.current = null;
-        }
-
-        if (currRole === 'doctor') {
-            try {
-                await axios.put(`${backendURL}/appointments/complete?id=${appointmentId}`, {}, { withCredentials: true });
-            } catch (error) {
-                console.error('Error starting appointment:', error);
-            }
-        }
-        // setRemoteUser(null);
-    }
 
     const draggableRef = useRef(null);
 
@@ -234,72 +239,81 @@ const VideoCall = () => {
 
     return (
         <>
-            {/* <div className="users-container">
-                {remoteUser && (
-                    <button onClick={() => { endCall(); socketRef.current.emit('end-call', { from: socketRef.current.id, to: remoteUser }); }} className='call-button'>End Call</button>
-                )}
-                {!remoteUser && users.map(user => (
-                    <button key={user.id} onClick={() => startCall(user.id)} className='call-button'>Call {user.name}</button>
-                ))}
-            </div>
-
-            <div className="video-container">
-                <div>
-                    <video ref={remoteVideoRef} autoPlay className='video'></video>
-                    <h1>{remoteUser ? users.find(user => user.id === remoteUser).name || remoteUser : "Remote User"}</h1>
-                </div>
-
-                <div>
-                    <video ref={localVideoRef} autoPlay muted className="video"></video>
-                    <h1>You (Local)</h1>
-                </div>
-            </div> */}
-
-            <header className="flex justify-between items-center px-4 py-2">
-                <div className="flex items-center space-x-4">
-                    <img src={`/profilePicture/${patient?.profilePicture}`} alt="User Profile" className="w-16 h-16 rounded-full object-cover" />
+            <header className="flex flex-col md:flex-row justify-between items-center px-4 py-2">
+                <div className="flex items-center space-x-4 mb-4 md:mb-0">
+                    <img
+                        src={`/profilePicture/${patient?.profilePicture}`}
+                        alt="User Profile"
+                        className="w-16 h-16 rounded-full object-cover"
+                    />
                     <div>
-                        <h2 className="text-xl font-semibold">{patient?.personal_info.fullName}</h2>
-                        <p className="text-gray-600">Patient</p>
+                        <h2 className={`text-xl font-semibold ${darkTheme ? 'text-white' : 'text-black'}`}>
+                            {patient?.personal_info.fullName}
+                        </h2>
+                        <p className={`text-sm ${darkTheme ? 'text-gray-400' : 'text-gray-600'}`}>Patient</p>
                     </div>
                 </div>
                 <div className="flex items-center space-x-4">
-                    <img src={`/profilePicture/${doctor?.profilePicture}`} alt="Doctor Profile" className="w-16 h-16 rounded-full object-cover" />
+                    <img
+                        src={`/profilePicture/${doctor?.profilePicture}`}
+                        alt="Doctor Profile"
+                        className="w-16 h-16 rounded-full object-cover"
+                    />
                     <div>
-                        <h2 className="text-xl font-semibold">{doctor?.personal_info.fullName}</h2>
-                        <p className="text-gray-600">{doctor?.professional_info.speciality}</p>
+                        <h2 className={`text-xl font-semibold ${darkTheme ? 'text-white' : 'text-black'}`}>
+                            {doctor?.personal_info.fullName}
+                        </h2>
+                        <p className={`text-sm ${darkTheme ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {doctor?.professional_info.speciality}
+                        </p>
                     </div>
                 </div>
-            </header>
+            </header >
 
-            <div className="p-4 shadow-lg min-h-[75vh] max-h-screen w-full bg-gray-200/70 rounded-lg space-y-8">
-                <div className='relative w-full h-[65vh]'>
+            <div
+                className={`p-4 shadow-lg min-h-[75vh] max-h-screen w-full rounded-lg space-y-8 ${darkTheme ? 'bg-gray-800' : 'bg-gray-200/70'
+                    }`}
+            >
+                <div className="relative w-full h-[65vh]">
                     <DraggableCore nodeRef={draggableRef} onDrag={handleDrag} onStop={handleStop}>
                         <div ref={draggableRef}>
                             <video
                                 ref={localVideoRef}
-                                autoPlay muted
-                                className="w-64 h-48 absolute bottom-5 right-5 z-50 bg-black mb-4 rounded-lg"
+                                autoPlay
+                                muted
+                                className={`w-40 h-32 md:w-64 md:h-48 absolute bottom-5 right-5 z-50 bg-black mb-4 rounded-lg ${darkTheme ? 'border border-gray-600' : ''
+                                    }`}
                                 style={{ top: `${position.y}px`, left: `${position.x}px` }}
                             ></video>
                         </div>
                     </DraggableCore>
 
-                    <video ref={remoteVideoRef} autoPlay muted className="w-full h-full bg-black mb-4 rounded-lg"></video>
-                </div>
+                    <video
+                        ref={remoteVideoRef}
+                        autoPlay
+                        className={`w-full h-full bg-black mb-4 rounded-lg ${darkTheme ? 'border border-gray-600' : ''
+                            }`}
+                    ></video>
+                </div >
 
                 <div className="flex justify-center space-x-4">
                     {!started ? (
                         <button
                             onClick={startCall}
-                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                            className={`px-4 py-2 rounded-lg ${darkTheme
+                                ? 'bg-green-600 text-white hover:bg-green-700'
+                                : 'bg-green-500 text-white hover:bg-green-600'
+                                }`}
                         >
                             Start Call
                         </button>
                     ) : (
                         <button
                             onClick={endCall}
-                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                            className={`px-4 py-2 rounded-lg ${darkTheme
+                                ? 'bg-red-600 text-white hover:bg-red-700'
+                                : 'bg-red-500 text-white hover:bg-red-600'
+                                }`}
                         >
                             End Call
                         </button>

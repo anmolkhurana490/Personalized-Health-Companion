@@ -7,7 +7,7 @@ import { Routes, Route } from 'react-router-dom';
 import Profile from './doctor_components/Profile';
 import Patients from './doctor_components/Patients';
 import Appointments from './doctor_components/Appointments';
-import ChatsandCalls from './doctor_components/ChatsandCalls';
+import Chats from './doctor_components/Chats';
 import Analytics from './doctor_components/Analytics';
 import ReportsandPrescriptions from './doctor_components/ReportsandPrescriptions';
 
@@ -20,7 +20,7 @@ const DoctorDashboardRoutes = () => {
             <Route path="profile" element={<Profile profile={profile} setProfile={setProfile} currRole={'doctor'} />} />
             <Route path="patients" element={<Patients profile={profile} />} />
             <Route path="appointments" element={<Appointments />} />
-            <Route path="chatsAndCalls" element={<ChatsandCalls />} />
+            <Route path="chats" element={<Chats />} />
             <Route path="reports" element={<ReportsandPrescriptions />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="notifications" element={<Notifications />} />
@@ -85,7 +85,7 @@ const DoctorDashboard = () => {
                                 { to: "/dashboard/doctor/profile", label: "Profile" },
                                 { to: "/dashboard/doctor/patients", label: "Patient List" },
                                 { to: "/dashboard/doctor/appointments", label: "Appointments Manager" },
-                                { to: "/dashboard/doctor/chatsAndCalls", label: "Chat/Call with Patients" },
+                                { to: "/dashboard/doctor/chats", label: "Chat with Patients" },
                                 { to: "/dashboard/doctor/reports", label: "Reports/Prescriptions" },
                                 { to: "/dashboard/doctor/analytics", label: "Analytics" },
                                 { to: "/dashboard/doctor/notifications", label: "Notifications" },
@@ -130,7 +130,7 @@ const MainDashboard = ({ profile }) => {
                     { to: "/dashboard/doctor/profile", title: "Profile", description: "View and manage your profile." },
                     { to: "/dashboard/doctor/patients", title: "Patient List", description: "View and manage your patients." },
                     { to: "/dashboard/doctor/appointments", title: "Appointments Manager", description: "Check your upcoming appointments." },
-                    { to: "/dashboard/doctor/chatsAndCalls", title: "Chat/Call with Patients", description: "Real-time chats or video call for patient interaction." },
+                    { to: "/dashboard/doctor/chats", title: "Chat with Patients", description: "Real-time chats or video call for patient interaction." },
                     { to: "/dashboard/doctor/reports", title: "Reports/Prescriptions", description: "Upload and manage patient prescriptions." },
                     { to: "/dashboard/doctor/analytics", title: "Analytics", description: "Overview of consultations and feedback." },
                     { to: "/dashboard/doctor/notifications", title: "Notifications", description: "Alerts for upcoming appointments or messages." },

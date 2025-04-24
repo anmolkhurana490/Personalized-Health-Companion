@@ -97,7 +97,7 @@ router.get('/appointment', async (req, res) => {
 
         res.json({ success: true, appointment });
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         res.status(500).json({ success: false, message: err.message });
     }
 });

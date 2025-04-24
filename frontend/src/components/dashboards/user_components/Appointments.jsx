@@ -83,7 +83,7 @@ const Appointments = () => {
                             <p><strong>Doctor:</strong> {appointment.doctor.fullName}</p>
                         </div>
                         {appointment.status === 'completed' ? (
-                            <p><strong>Prescription:</strong> {appointment.prescription}</p>
+                            <p><strong>Prescription:</strong> {appointment.prescription.instructions || 'N/A'}</p>
                         ) : (
                             appointment.status === 'scheduled' ? (
                                 <div className='flex gap-2'>

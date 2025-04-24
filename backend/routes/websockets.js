@@ -18,9 +18,10 @@ const VideoSocketServer = (server) => {
             io.emit('user-joined', users);
         });
 
-        socket.on('offer', ({ from, to, offer }) => {
+        socket.on('offer', ({ from, remoteId, offer }) => {
             // console.log('Received offer on server:', offer);
-            if (users[to]) socket.to(to).emit('offer', { from, to, offer });
+            const to = Object.values(users).find(predicate => predicate.user === remoteId)?.id;
+            if (to) socket.to(to).emit('offer', { from, to, offer });
         });
 
         socket.on('answer', ({ from, to, answer }) => {
@@ -34,7 +35,7 @@ const VideoSocketServer = (server) => {
         });
 
         socket.on('end-call', ({ from, to }) => {
-            // console.log('Call ended on server');
+            // console.log('Call ended on server', from, to);
             socket.to(to).emit('call-ended', { from });
         });
 
@@ -59,23 +60,60 @@ const ChatSocketServer = (server) => {
         }
     });
 
-    const users = {};
+    const users = {}; // Map of socket IDs to user IDs
+    const activeChats = {}; // Map of user IDs to their current chat room
 
     io.on('connection', socket => {
-        socket.on('join-user', ({ user, remote }) => {
-            users[socket.id] = { user, id: socket.id };
+        socket.on('join-user', ({ userId, remoteId }) => {
+            // console.log(`User ${userId} wants to chat with ${remoteId}`);
 
-            const to = Object.values(users).find(user => user === remote).id;
-            if (to) socket.to(to).emit('user-joined', users[socket.id]);
+            // Create a unique room ID for 2 users
+            const roomId = [userId, remoteId].sort().join('-');
+
+            // Check if remote user is busy
+            if (activeChats[remoteId] && activeChats[remoteId] !== roomId) {
+                socket.emit('busy-remote');
+                return;
+            }
+
+            socket.join(roomId); // adds socket.id to room 'roomId'
+
+            activeChats[userId] = roomId;
+            activeChats[remoteId] = roomId;
+
+            // tell the user its room id
+            socket.emit('user-joined', { roomId });
+
+            // console.log(`Room created: ${roomId}`);
         });
 
-        socket.on('send-message', ({ from, to, message }) => {
-            if (to) socket.to(to).emit('receive-message', { from, message });
+        // Handle sending messages
+        socket.on('send-message', ({ roomId, message }) => {
+            // console.log(`Message from ${from} in room ${roomId}: ${message}`);
+            socket.to(roomId).emit('receive-message', { message });
         });
 
+        // Handle user disconnecting
         socket.on('disconnect', () => {
+            // console.log(`User disconnected: ${socket.id}`);
+            const userId = users[socket.id];
+
+            // Remove the user from active chats
+            if (userId && activeChats[userId]) {
+                const roomId = activeChats[userId];
+                socket.leave(roomId);
+
+                delete activeChats[userId];
+            }
+
+            // Remove the user from the users map
             delete users[socket.id];
-            socket.leave();
+        });
+
+        // Track connected users
+        socket.on('register-user', (userId) => {
+            users[socket.id] = userId;
+            // console.log(`User registered: ${userId}`);
         });
     });
 }
