@@ -6,6 +6,9 @@ const HealthOverview = ({ profile }) => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     const [healthData, setHealthData] = useState({
+        summary: '',
+        alert: {},
+        tips: [],
         bloodGroup: 'Unknown',
         allergies: 'None',
         conditions: 'None',
@@ -66,6 +69,9 @@ const HealthOverview = ({ profile }) => {
 
         setHealthData((prev) => ({
             ...prev,
+            summary: profile?.health_info.ai_generated.health_summary,
+            alert: profile?.health_info.ai_generated.health_alert,
+            tips: profile?.health_info.ai_generated.lifestyle_tips,
             height,
             weight,
             bmi,
@@ -85,7 +91,12 @@ const HealthOverview = ({ profile }) => {
             <h2 className="text-2xl font-semibold mb-2">Health Overview</h2>
             <p>Check your latest health statistics here.</p>
 
-            <div className="grid grid-cols-2 max-md:grid-cols-1 gap-4 p-4">
+            <div className={`p-4 my-4 rounded ${themeColors.card}`}>
+                <h3 className="text-xl font-semibold mb-2">Health Summary</h3>
+                <p>{healthData?.summary}</p>
+            </div>
+
+            <div className="grid grid-cols-2 max-md:grid-cols-1 gap-4">
                 <div className={`p-4 rounded ${themeColors.card}`}>
                     <h3 className="text-xl font-semibold mb-2">🏥 Health Overview</h3>
                     <div>
@@ -166,19 +177,19 @@ const HealthOverview = ({ profile }) => {
                         <p><b>Medicine:</b> Take Aspirin</p>
                     </div>
                 </div>
-
-                <div className={`p-4 rounded ${themeColors.card}`}>
-                    <h3 className="text-xl font-semibold mb-2">Health Tips</h3>
-                    <ul>
-                        {healthRecommendations.map((tip) => (
-                            <li key={tip.id} className={`p-2 rounded-md my-2 ${darkTheme ? 'bg-gray-600' : 'bg-gray-200'}`}>
-                                {tip.tip}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
             </div>
-        </div>
+
+            <div className={`p-4 my-4 rounded ${themeColors.card}`}>
+                <h3 className="text-xl font-semibold mb-2">Health Tips</h3>
+                <ul>
+                    {healthData?.tips.map((tip, index) => (
+                        <li key={index} className={`p-2 rounded-md my-2 ${darkTheme ? 'bg-gray-600' : 'bg-gray-200'}`}>
+                            {tip}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div >
     );
 };
 

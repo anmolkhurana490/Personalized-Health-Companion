@@ -14,6 +14,7 @@ import { updateHealthData } from "./api/updateRealTimeData.js";
 
 import http from "http";
 import { VideoSocketServer, ChatSocketServer } from "./routes/websockets.js";
+import { generateAIContent } from "./api/ai_content.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -40,6 +41,7 @@ app.use('/gemini-chatbot', chatbot_router);
 app.use('/dashboard', authMiddleware, dashboard_router);
 
 cron.schedule('0 8,18 * * *', updateHealthData);
+// cron.schedule('0 8,18 * * *', generateAIContent);
 
 VideoSocketServer(server);
 ChatSocketServer(server);

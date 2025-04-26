@@ -9,7 +9,7 @@ const healthRecordSchema = new Schema({
     bloodGroup: { type: String, required: true },
     knownAllergies: { type: String },
     existingMedicalConditions: { type: String },
-    heartRate: { type: Number }, // Latest Heart Rate (bpm)
+    // Latest Heart Rate (bpm)
 
     weightHistory: [
         {
@@ -24,6 +24,16 @@ const healthRecordSchema = new Schema({
             heartRate: { type: Number }
         }
     ],
+
+    // AI Generated Content
+    ai_generated: {
+        health_summary: { type: String },
+        health_alert: {
+            alert: { type: String, default: null },
+            emergency: { type: Boolean, default: false }
+        },
+        lifestyle_tips: [{ type: String }]
+    },
 
     // Medical History
     medicalHistory: [
