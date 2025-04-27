@@ -103,7 +103,7 @@ const AIHealthAssistant = () => {
                     )}
                 </div>
 
-                <form onSubmit={sendMessage} className="flex items-center px-4">
+                <form onSubmit={sendMessage} className="flex flex-wrap items-center px-4">
                     <input
                         type="text"
                         ref={inputRef}

@@ -11,7 +11,7 @@ import AIHealthAssistant from './user_components/AIHealthAssistant';
 import Appointments from './user_components/Appointments';
 import LifestyleTracker from './user_components/LifestyleTracker';
 import MedicalHistory from './user_components/MedicalHistory';
-import Notifications from './user_components/notifications';
+import Notifications from './user_components/Notifications';
 
 const UserDashboardRoutes = () => {
     const { profile, setProfile } = useContext(AppContext);

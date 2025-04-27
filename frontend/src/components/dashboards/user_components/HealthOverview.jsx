@@ -57,12 +57,12 @@ const HealthOverview = ({ profile }) => {
         const currSteps = 5400;
         const goalSteps = 10000;
 
-        const weightHistory = profile?.health_info.weightHistory.map(({ weight, date }) => ({
+        const weightHistory = profile?.health_info.weightHistory?.map(({ weight, date }) => ({
             weight,
             month: `${months[new Date(date).getMonth()]}`,
         }));
 
-        const heartRateHistory = profile?.health_info.heartRateLogs.map(({ weight, date }) => ({
+        const heartRateHistory = profile?.health_info.heartRateLogs?.map(({ weight, date }) => ({
             'heart rate': heartRate,
             month: `${months[new Date(date).getMonth()]}`,
         }));
