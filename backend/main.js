@@ -40,9 +40,8 @@ app.use('/authenticate', authenticate_router);
 app.use('/gemini-chatbot', chatbot_router);
 app.use('/dashboard', authMiddleware, dashboard_router);
 
-cron.schedule('0 8,18 * * *', updateHealthData);
-// cron.schedule('0 8,18 * * *', generateAIContent);
-generateAIContent()
+cron.schedule('0 8,18 * * *', updateHealthData); // Run at 8:00 AM and 6:00 PM
+cron.schedule('0 8 * * *', generateAIContent); // Run at 8:00 AM
 
 VideoSocketServer(server);
 ChatSocketServer(server);
