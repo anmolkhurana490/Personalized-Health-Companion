@@ -23,7 +23,7 @@ A smart AI & IoT-based web platform that helps users manage their health, monito
 
 - **Frontend**: ReactJS, Tailwind CSS, Socket.IO
 - **Backend**: Node.js, Express.js, MongoDB
-- **AI Integration**: Ollama, Google Gemini API
+- **AI Integration**: Google Gemini API
 
 ---
 

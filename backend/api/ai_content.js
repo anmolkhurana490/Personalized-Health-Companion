@@ -1,21 +1,19 @@
 import axios from 'axios';
 import { HealthRecord } from '../models/userRecordSchemas.js';
 
-const OLLAMA_URL = 'http://localhost:11434/api/generate'; // Local Ollama server
-const OLLAMA_MODEL = 'llama3.2';
+import { config } from "dotenv"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
-async function generateAIResponse(prompt, model = OLLAMA_MODEL) {
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+async function generateAIResponse(prompt) {
     try {
-        const response = await axios.post(OLLAMA_URL, {
-            model: model,
-            prompt: prompt,
-            stream: false
-        });
+        const response = await model.generateContent(prompt);
 
-        console.log('AI content generated successfully');
-        return response.data.response.trim();
+        return response.response.text().trim();
     } catch (error) {
-        console.error('Ollama error:', error.response.data.error);
+        console.error('Ollama error:', error.response);
         return '';
     }
 }
@@ -31,19 +29,19 @@ async function generateAIResponse(prompt, model = OLLAMA_MODEL) {
 
 // Health summary
 const healthSummary = async (health_info) => {
-    const prompt = `Analyze the following patient vitals data and summerise it in 20words: 
+    const prompt = `Be straight to point and Act like cerified AI doctor. Analyze the following patient vitals data and summerise it in 20 words: 
     ${JSON.stringify(health_info)}`;
-    const aiResponse = await generateAIResponse(prompt, OLLAMA_MODEL);
+    const aiResponse = await generateAIResponse(prompt);
     return aiResponse;
 };
 
 // Health alert
 const healthAlert = async (health_info) => {
-    const prompt = `Analyze the following patient vitals data and provide two responses: 
-    1. Health alert information if any, otherwise null,
-    2. Whether an emergency is needed (true/false), use delimited '|'
+    const prompt = `Be straight to point and Act like cerified AI doctor. Analyze the following patient vitals data and provide two responses: 
+    - Health alert information (in max 4-5 words) if any, otherwise null,
+    - Whether an emergency is needed (true/false), use delimited '|'
     ${JSON.stringify(health_info)}`;
-    const aiResponse = await generateAIResponse(prompt, OLLAMA_MODEL);
+    const aiResponse = await generateAIResponse(prompt);
 
     const [alert, emergency] = aiResponse.split('|').map(item => item.trim());
     return { alert: alert === 'null' ? null : alert, emergency: emergency === 'true' };
@@ -51,9 +49,9 @@ const healthAlert = async (health_info) => {
 
 // Lifestyle tips
 const lifestyleTips = async (health_info) => {
-    const prompt = `Suggest lifestyle tips based on this data in 2-3 points (delimited by '\n', no bullets or list numbering): 
+    const prompt = `Be straight to point and Act like cerified AI doctor. Suggest lifestyle tips based on this data in 2-3 points each in 5-10 words (delimited by '\n', avoid bullets or list numbering): 
     ${JSON.stringify(health_info)}`;
-    const aiResponse = await generateAIResponse(prompt, OLLAMA_MODEL);
+    const aiResponse = await generateAIResponse(prompt);
 
     const tips = aiResponse.split('\n').filter(point => point.trim() !== '');
     return tips;

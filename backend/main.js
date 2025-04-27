@@ -42,6 +42,7 @@ app.use('/dashboard', authMiddleware, dashboard_router);
 
 cron.schedule('0 8,18 * * *', updateHealthData);
 // cron.schedule('0 8,18 * * *', generateAIContent);
+generateAIContent()
 
 VideoSocketServer(server);
 ChatSocketServer(server);
