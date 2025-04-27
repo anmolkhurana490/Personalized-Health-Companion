@@ -5,11 +5,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AppContext } from '../../AppProvider';
 import { Routes, Route } from 'react-router-dom';
 import Profile from './doctor_components/Profile';
-import Patients from './doctor_components/Patients';
+import PatientManager from './doctor_components/PatientManager';
 import Appointments from './doctor_components/Appointments';
 import Chats from './doctor_components/Chats';
 import Analytics from './doctor_components/Analytics';
 import ReportsandPrescriptions from './doctor_components/ReportsandPrescriptions';
+import Notifications from './doctor_components/Notifcations';
 
 const DoctorDashboardRoutes = () => {
     const { profile, setProfile } = useContext(AppContext);
@@ -18,7 +19,7 @@ const DoctorDashboardRoutes = () => {
         <Routes>
             <Route path="" element={<MainDashboard profile={profile} />} />
             <Route path="profile" element={<Profile profile={profile} setProfile={setProfile} currRole={'doctor'} />} />
-            <Route path="patients" element={<Patients profile={profile} />} />
+            <Route path="patients" element={<PatientManager profile={profile} />} />
             <Route path="appointments" element={<Appointments />} />
             <Route path="chats" element={<Chats />} />
             <Route path="reports" element={<ReportsandPrescriptions />} />
@@ -145,17 +146,6 @@ const MainDashboard = ({ profile }) => {
                 ))}
             </div>
         </>
-    );
-};
-
-const Notifications = () => {
-    const { darkTheme } = useContext(AppContext);
-
-    return (
-        <div className={`p-4 rounded shadow ${darkTheme ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'}`}>
-            <h2 className="text-2xl font-semibold mb-2">Notifications</h2>
-            <p>View your notifications here.</p>
-        </div>
     );
 };
 

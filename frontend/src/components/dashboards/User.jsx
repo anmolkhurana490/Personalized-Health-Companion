@@ -11,6 +11,7 @@ import AIHealthAssistant from './user_components/AIHealthAssistant';
 import Appointments from './user_components/Appointments';
 import LifestyleTracker from './user_components/LifestyleTracker';
 import MedicalHistory from './user_components/MedicalHistory';
+import Notifications from './user_components/notifications';
 
 const UserDashboardRoutes = () => {
     const { profile, setProfile } = useContext(AppContext);
@@ -138,7 +139,7 @@ const MainDashboard = ({ profile }) => {
                     { to: "/dashboard/user/appointments", title: "Appointments", description: "Upcoming appointments with doctors." },
                     { to: "/dashboard/user/lifestyle-tracker", title: "Lifestyle Tracker", description: "Track users' daily habits." },
                     { to: "/dashboard/user/medical-history", title: "Medical History", description: "Upload and view reports or prescriptions." },
-                    { to: "/dashboard/user/notifications", title: "Notifications/Reminders", description: "Medication reminders and upcoming appointment notifications." },
+                    { to: "/dashboard/user/notifications", title: "Notifications/Reminders", description: "Medication reminders and Alerts." },
                     { to: "/dashboard/user/settings", title: "Settings", description: "Manage your account settings." },
                 ].map((item, index) => (
                     <Link key={index} to={item.to}>
@@ -150,17 +151,6 @@ const MainDashboard = ({ profile }) => {
                 ))}
             </div>
         </>
-    );
-};
-
-const Notifications = () => {
-    const { darkTheme } = useContext(AppContext);
-
-    return (
-        <div className={`p-4 rounded shadow ${darkTheme ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'}`}>
-            <h2 className="text-2xl font-semibold mb-2">Notifications/Reminders</h2>
-            <p>Medication reminders and upcoming appointment notifications.</p>
-        </div>
     );
 };
 

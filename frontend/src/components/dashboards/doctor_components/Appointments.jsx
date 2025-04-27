@@ -54,6 +54,9 @@ const Appointments = () => {
     const startCall = (id, userId) => {
         window.open(`/user/video-call/${id}`, '_blank');
     };
+    const viewProfile = (userId) => {
+        navigate('/dashboard/doctor/patients', { state: { userId } });
+    };
 
     const options = ["scheduled", "past"];
 
@@ -84,6 +87,7 @@ const Appointments = () => {
                             cancelAppointment={cancelAppointment}
                             startChat={startChat}
                             startCall={startCall}
+                            viewProfile={viewProfile}
                         />
                     </TabPanel>
                 ))}
@@ -92,7 +96,7 @@ const Appointments = () => {
     );
 };
 
-const FilteredAppointments = ({ appointments, activeTab, darkTheme, cancelAppointment, startChat, startCall }) => {
+const FilteredAppointments = ({ appointments, activeTab, darkTheme, cancelAppointment, startChat, startCall, viewProfile }) => {
     if (appointments?.length === 0) {
         return <p>No appointments available.</p>;
     }
@@ -127,7 +131,10 @@ const FilteredAppointments = ({ appointments, activeTab, darkTheme, cancelAppoin
                                     Chat
                                 </button>
 
-                                <button className={`px-4 py-2 rounded ${darkTheme ? "bg-gray-600 text-gray-100" : "bg-gray-300 text-gray-900"} hover:bg-gray-400`}>View Profile</button>
+                                <button
+                                    className={`px-4 py-2 rounded ${darkTheme ? "bg-gray-600 text-gray-100" : "bg-gray-300 text-gray-900"} hover:bg-gray-400`}
+                                    onClick={() => viewProfile(appointment.user.userId)}
+                                >View Profile</button>
 
                                 <button onClick={() => cancelAppointment(appointment._id)} className={`px-4 py-2 rounded ${darkTheme ? "bg-red-600 text-gray-100" : "bg-red-300 text-gray-900"} hover:bg-red-400`}>Cancel</button>
                             </>

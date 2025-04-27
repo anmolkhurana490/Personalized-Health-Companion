@@ -303,6 +303,7 @@ const userInfoFilter = async (entry) => {
         id: entry._id,
         personal_info: entry.personal_info,
         health_info: await HealthRecord.findOne({ _id: entry.health_info }),
+        emergency_contact: entry.emergency_contact,
         profilePicture: entry.profilePicture
     };
 }

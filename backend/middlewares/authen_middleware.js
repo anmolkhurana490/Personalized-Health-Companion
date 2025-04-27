@@ -1,5 +1,5 @@
 import { verifyToken } from "../authentication/stateless_auth.js";
-import { User } from "../models/registerSchema.js";
+import { Doctor, User } from "../models/registerSchema.js";
 
 const authMiddleware = async (req, res, next) => {
     const token = req.cookies.loginToken;
@@ -13,8 +13,14 @@ const authMiddleware = async (req, res, next) => {
         return res.send({ path: "/login", message: "Please login first" });
     }
     else {
-        const user = await User.findById(data._id);
-        req.data = await { role: data.role, ...user._doc };
+        if (data.role == 'doctor') {
+            const doctor = await Doctor.findById(data._id);
+            req.data = await { role: data.role, ...doctor._doc };
+        }
+        else {
+            const user = await User.findById(data._id);
+            req.data = await { role: data.role, ...user._doc };
+        }
         next();
     }
 };
