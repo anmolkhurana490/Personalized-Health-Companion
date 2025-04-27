@@ -44,7 +44,7 @@ const healthAlert = async (health_info) => {
     const aiResponse = await generateAIResponse(prompt);
 
     const [alert, emergency] = aiResponse.split('|').map(item => item.trim());
-    return { alert: alert === 'null' ? null : alert, emergency: emergency === 'true' };
+    return { alert: alert.toLowerCase() === 'null' ? null : alert, emergency: emergency === 'true' };
 };
 
 // Lifestyle tips
