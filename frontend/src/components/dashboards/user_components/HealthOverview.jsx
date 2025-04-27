@@ -69,9 +69,9 @@ const HealthOverview = ({ profile }) => {
 
         setHealthData((prev) => ({
             ...prev,
-            summary: profile?.health_info.ai_generated.health_summary,
-            alert: profile?.health_info.ai_generated.health_alert,
-            tips: profile?.health_info.ai_generated.lifestyle_tips,
+            summary: profile?.health_info.ai_generated?.health_summary,
+            alert: profile?.health_info.ai_generated?.health_alert,
+            tips: profile?.health_info.ai_generated?.lifestyle_tips,
             height,
             weight,
             bmi,
