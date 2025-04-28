@@ -1,8 +1,11 @@
 import mongoose from "mongoose";
+import { config } from "dotenv";
+
+config({ path: './.env' });
 
 const connectDB = async () => {
     try {
-        await mongoose.connect('mongodb+srv://anmolkhurana490:vWPxH7LNmv2bOR96@cluster0.08zk9.mongodb.net/Personalised-Health-Companion');
+        await mongoose.connect(`${process.env.MONGODB_URL}/Personalised-Health-Companion`);
         console.log("MongoDB connected");
     } catch (error) {
         console.error("MongoDB connection error:", error);
