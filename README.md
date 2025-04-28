@@ -37,7 +37,7 @@ A smart AI & IoT-based web platform that helps users manage their health, monito
    Add the following in respective `.env` files:
 
    - **Backend**  
-     `JWT_SECRET_KEY`, `GEMINI_API_KEY`
+     `MONGODB_URL`, `JWT_SECRET_KEY`, `GEMINI_API_KEY`
 
    - **Frontend**  
      `VITE_BACKEND_URL`
