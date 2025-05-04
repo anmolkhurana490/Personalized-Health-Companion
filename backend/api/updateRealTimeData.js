@@ -4,7 +4,7 @@ function randomInRange(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function generateHealthData(userId) {
+function generateHealthData() {
     return {
         weight: randomInRange(30, 120),
         heartRate: randomInRange(60, 110),
@@ -21,6 +21,7 @@ function updateWeightHistory(weightHistory, currentWeight) {
     if (!currentWeight) return weightHistory;
 
     const currentDate = new Date(Date.now());
+    let updatedHistory = [...weightHistory];
     let existingRecord = weightHistory.slice(-1)[0];
 
     if (existingRecord) {
@@ -28,14 +29,15 @@ function updateWeightHistory(weightHistory, currentWeight) {
 
         if (lastDate.getMonth() == currentDate.getMonth() && lastDate.getFullYear() == currentDate.getFullYear()) {
             existingRecord.weight = (Number(existingRecord.weight) + Number(currentWeight)) / 2;
-            weightHistory.pop();
+            updatedHistory.pop();
         }
         else existingRecord = { weight: currentWeight };
     } else {
         existingRecord = { weight: currentWeight };
     }
 
-    weightHistory.push(existingRecord);
+    updatedHistory.push(existingRecord);
+    return updatedHistory;
 }
 
 // Save the heart rate history to the database
@@ -43,6 +45,7 @@ function updateHeartRateHistory(heartRateHistory, currentHeartRate) {
     if (!currentHeartRate) return heartRateHistory;
 
     const currentDate = new Date(Date.now());
+    let updatedHistory = [...heartRateHistory];
     let existingRecord = heartRateHistory.slice(-1)[0];
 
     if (existingRecord) {
@@ -50,19 +53,20 @@ function updateHeartRateHistory(heartRateHistory, currentHeartRate) {
 
         if (lastDate.getMonth() == currentDate.getMonth() && lastDate.getFullYear() == currentDate.getFullYear()) {
             existingRecord.heartRate = (Number(existingRecord.heartRate) + Number(currentHeartRate)) / 2;
-            heartRateHistory.pop();
+            updatedHistory.pop();
         }
         else existingRecord = { heartRate: currentHeartRate };
     } else {
         existingRecord = { heartRate: currentHeartRate };
     }
 
-    heartRateHistory.push(existingRecord);
+    updatedHistory.push(existingRecord);
+    return updatedHistory;
 }
 
 // Update the each health data in the database
 async function updateHealthData() {
-    const healthData = generateHealthData(userId);
+    const healthData = generateHealthData();
     const healthRecords = await HealthRecord.find({});
 
     for (const healthRecord of healthRecords) {
